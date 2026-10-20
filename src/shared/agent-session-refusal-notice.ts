@@ -29,7 +29,7 @@ import {
   type AgentSessionWriteRefusal
 } from './agent-session-write-failure'
 import { agentSessionRefusalReasonWords } from './agent-session-refusal-reason-words'
-import { TUI_AGENT_DISPLAY_NAMES } from './tui-agent-display-names'
+import { tuiAgentDisplayName } from './tui-agent-display-names'
 
 export {
   agentSessionRefusalReasonWords,
@@ -146,7 +146,7 @@ function reasonParts(
       {
         failure: { kind: words.fact },
         surface: 'row',
-        context: agent ? { ...context, agentName: TUI_AGENT_DISPLAY_NAMES[agent] } : context
+        context: agent ? { ...context, agentName: tuiAgentDisplayName(agent) ?? agent } : context
       }
     ]
     return context.retryControl && words.action === 'retry' ? said : [...said, words.step]

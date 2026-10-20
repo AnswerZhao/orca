@@ -5,6 +5,11 @@ import type {
 import type { CodexConfigSyncStatus } from '../../shared/codex-config-sync-types'
 import type { CursorAccountStatus, GrokAccountStatus } from '../../shared/rate-limit-types'
 import type { ZcodePlanCredentialsStatus } from '../../shared/zcode-plan-sites'
+import type {
+  CcProviderConfig,
+  CcProviderPatch,
+  CcProviderPublicView
+} from '../../shared/cc-provider'
 import type { MiniMaxCredentialsStatus } from '../../shared/minimax-credentials-status'
 
 export type CodexAccountsApi = {
@@ -82,6 +87,16 @@ export type MinimaxCredentialsApi = {
   clearCookie: () => Promise<MiniMaxCredentialsStatus>
   saveApiKey: (key: string) => Promise<MiniMaxCredentialsStatus>
   clearApiKey: () => Promise<MiniMaxCredentialsStatus>
+}
+
+export type CcProvidersApi = {
+  // Why: every return value is the redacted view — the apiKey never crosses IPC back to the renderer.
+  list: () => Promise<CcProviderPublicView[]>
+  add: (slug: string, config: CcProviderConfig) => Promise<CcProviderPublicView>
+  // Why: the patch's apiKey is optional — omitting it keeps the stored key, so edits never
+  // need the secret to cross IPC back into the renderer.
+  update: (slug: string, patch: CcProviderPatch) => Promise<CcProviderPublicView>
+  delete: (slug: string) => Promise<boolean>
 }
 
 export type ZcodePlanCredentialsApi = {

@@ -2,7 +2,7 @@ import type { AgentStartupPlan } from './tui-agent-startup'
 import type { SleepingAgentLaunchConfig } from './agent-session-resume'
 import type { SessionOptionValue } from './native-chat-session-options'
 import type { TuiAgent } from './tui-agent'
-import { TUI_AGENT_CONFIG } from './tui-agent-config'
+import { requireTuiAgentConfig } from './require-tui-agent-config'
 import { tokenizeStartupCommand, type AgentStartupShell } from './tui-agent-startup-shell'
 import { findOpenCodeRunCommand } from './opencode-headless-command'
 import { openCodeStartupPromptEnv } from './opencode-startup-prompt'
@@ -35,7 +35,7 @@ export function buildFlagPromptStartupPlan(args: {
   return {
     agent: args.agent,
     launchCommand: `${args.launchCommand}${promptSuffix}`,
-    expectedProcess: TUI_AGENT_CONFIG[args.agent].expectedProcess,
+    expectedProcess: requireTuiAgentConfig(args.agent).expectedProcess,
     followupPrompt: null,
     launchConfig: args.launchConfig,
     ...appliedSessionOptionProps(args.sessionOptions),

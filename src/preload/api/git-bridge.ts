@@ -1,3 +1,4 @@
+import type { TuiAgent } from '../../shared/tui-agent'
 import { ipcRenderer } from 'electron'
 import type { GitForkSyncExpectedUpstream, GitForkSyncResult } from '../../shared/git-fork-sync'
 import type { GitStagingArea, GitUpstreamStatus } from '../../shared/git-status-types'
@@ -129,7 +130,7 @@ export const gitApi = {
     connectionId?: string
     sourceControlAiResolvedParams?: unknown
     sourceControlAi?: unknown
-    agentCmdOverrides?: Record<string, string>
+    agentCmdOverrides?: Partial<Record<TuiAgent, string>>
   }) => ipcRenderer.invoke('git:generateCommitMessage', args),
   discoverCommitMessageModels: (args: {
     agentId: string
@@ -153,7 +154,7 @@ export const gitApi = {
     connectionId?: string
     sourceControlAiResolvedParams?: unknown
     sourceControlAi?: unknown
-    agentCmdOverrides?: Record<string, string>
+    agentCmdOverrides?: Partial<Record<TuiAgent, string>>
   }) => ipcRenderer.invoke('git:generatePullRequestFields', args),
   cancelGeneratePullRequestFields: (args: {
     worktreePath: string

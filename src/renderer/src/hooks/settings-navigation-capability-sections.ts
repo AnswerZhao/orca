@@ -1,6 +1,7 @@
 import { LinearIcon } from '@/components/icons/LinearIcon'
 import { getAccountsPaneSearchEntries } from '@/components/settings/accounts-search'
 import { getAgentsPaneSearchEntries } from '@/components/settings/agents-search'
+import { getCcProvidersPaneSearchEntries } from '@/components/settings/cc-providers-search'
 import { getComputerUsePaneSearchEntries } from '@/components/settings/computer-use-search'
 import { getGeneralPaneSearchEntries } from '@/components/settings/general-search'
 import { getIntegrationsPaneSearchEntries } from '@/components/settings/integrations-search'
@@ -62,6 +63,17 @@ export function buildCapabilitySettingsSections({
       searchEntries: getAccountsPaneSearchEntries(),
       group: 'capabilities',
       badge: translate('auto.hooks.useSettingsNavigationMetadata.7c79d3b7bf', 'Optional')
+    },
+    {
+      id: 'cc-providers',
+      title: translate('auto.hooks.useSettingsNavigationMetadata.ccProvidersTitle', 'CC Providers'),
+      description: translate(
+        'auto.hooks.useSettingsNavigationMetadata.ccProvidersDescription',
+        'Run the Claude Code harness against third-party Anthropic-compatible providers (Kimi, GLM, DeepSeek, custom).'
+      ),
+      icon: Blocks,
+      searchEntries: getCcProvidersPaneSearchEntries(),
+      group: 'capabilities'
     },
     {
       id: 'orchestration',

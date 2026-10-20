@@ -1,4 +1,5 @@
-import { isTuiAgent, TUI_AGENT_CONFIG } from './tui-agent-config'
+import { isTuiAgent } from './tui-agent-config'
+import { requireTuiAgentConfig } from './require-tui-agent-config'
 import type {
   TerminalAgentQuickCommand,
   TerminalCommandQuickCommand,
@@ -68,7 +69,9 @@ export function isTerminalAgentQuickCommand(
 export function supportsTerminalAgentQuickCommand(
   agent: unknown
 ): agent is TerminalAgentQuickCommand['agent'] {
-  return isTuiAgent(agent) && TUI_AGENT_CONFIG[agent].promptInjectionMode !== 'stdin-after-start'
+  return (
+    isTuiAgent(agent) && requireTuiAgentConfig(agent).promptInjectionMode !== 'stdin-after-start'
+  )
 }
 
 export function getTerminalQuickCommandBody(command: TerminalQuickCommand): string {

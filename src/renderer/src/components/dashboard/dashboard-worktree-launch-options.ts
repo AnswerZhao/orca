@@ -128,7 +128,7 @@ export function buildDashboardWorktreeLaunchOptions(
         available.add(card.agentType)
       }
     }
-    const enabled = filterEnabledTuiAgents(
+    const enabled: TuiAgent[] = filterEnabledTuiAgents(
       TUI_AGENT_AUTO_PICK_ORDER.filter((agent) => available.has(agent)),
       state.settings?.disabledTuiAgents
     )

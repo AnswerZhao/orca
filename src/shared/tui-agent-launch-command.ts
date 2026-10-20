@@ -4,7 +4,8 @@ import {
 } from './agent-session-option-launch'
 import type { SessionOptionValue } from './native-chat-session-options'
 import { agentArgTerminatorIndex } from './agent-session-option-agent-args'
-import { getTuiAgentLaunchCommand, TUI_AGENT_CONFIG } from './tui-agent-config'
+import { requireTuiAgentConfig } from './require-tui-agent-config'
+import type { TuiAgentConfig } from './tui-agent-config-types'
 import {
   planAgentCliArgsSuffix,
   quoteStartupArg,
@@ -35,7 +36,7 @@ export function resolveAgentLaunchCommand(args: {
   const override = args.cmdOverrides[args.agent]
   const command =
     override ||
-    getTuiAgentLaunchCommand(TUI_AGENT_CONFIG[args.agent], args.platform, {
+    getTuiAgentLaunchCommand(requireTuiAgentConfig(args.agent), args.platform, {
       isRemote: args.isRemote
     })
   const suffix = planAgentCliArgsSuffix(args.agentArgs, args.shell)
@@ -109,4 +110,16 @@ function insertBeforeTerminator(
 ): string[] {
   const terminator = agentArgTerminatorIndex(agent, tokens)
   return [...tokens.slice(0, terminator), ...inserted, ...tokens.slice(terminator)]
+}
+
+export function getTuiAgentLaunchCommand(
+  config: TuiAgentConfig,
+  platform: NodeJS.Platform,
+  opts?: { isRemote?: boolean }
+): string {
+  // Why: local-only orca-ide rename (avoids GNOME Orca clash) must not leak to Linux remotes, whose relay shim is always `orca`.
+  if (opts?.isRemote && platform === 'linux') {
+    return config.launchCmd
+  }
+  return config.launchCmdByPlatform?.[platform] ?? config.launchCmd
 }

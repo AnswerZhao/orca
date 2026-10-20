@@ -1,6 +1,6 @@
 import type React from 'react'
 import { ClaudeIcon, DroidIcon, OpenAIIcon } from '@/components/status-bar/icons'
-import type { TuiAgent } from '../../../shared/tui-agent'
+import { isCcProviderAgentId, type TuiAgent } from '../../../shared/tui-agent'
 import type { TerminalAgent } from '../../../shared/terminal-agent'
 import { formatAgentTypeLabel } from '../../../shared/agent-type-label'
 import {
@@ -15,6 +15,7 @@ import {
 import { createLocalizedCatalog } from '@/i18n/localized-catalog'
 import { AGENT_FAVICON_ASSETS } from './agent-favicon-assets'
 import { buildAgentCatalogEntries } from './agent-catalog-entries'
+import { getCcProviderCatalogVersion } from './cc-provider-agents'
 
 export type AgentCatalogEntry = {
   id: TuiAgent
@@ -30,7 +31,10 @@ export type AgentCatalogEntry = {
   homepageUrl: string
 }
 
-export const getAgentCatalog = createLocalizedCatalog(buildAgentCatalogEntries)
+export const getAgentCatalog = createLocalizedCatalog(
+  buildAgentCatalogEntries,
+  getCcProviderCatalogVersion
+)
 
 // Why: tests and a few legacy call sites still import a catalog snapshot.
 export const AGENT_CATALOG: AgentCatalogEntry[] = getAgentCatalog()
@@ -53,7 +57,7 @@ export function AgentIcon({
   if (!agent) {
     return <AgentLetterIcon letter="?" size={size} />
   }
-  if (agent === 'claude' || agent === 'claude-agent-teams') {
+  if (agent === 'claude' || agent === 'claude-agent-teams' || isCcProviderAgentId(agent)) {
     return <ClaudeIcon size={size} />
   }
   if (agent === 'codex') {

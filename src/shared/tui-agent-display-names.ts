@@ -1,11 +1,11 @@
-import type { TuiAgent } from './tui-agent'
+import { isCcProviderAgentId, type StaticTuiAgent } from './tui-agent'
 
 /** Why: plain-English agent names for non-localized surfaces (keybinding
  * titles in the shared registry, which main, renderer, and the keybindings
  * file sanitizer all read). The renderer's localized agent catalog
  * (`agent-catalog.tsx`) stays the source of truth for UI labels; keep these
  * in sync with its `label` values when adding an agent. */
-export const TUI_AGENT_DISPLAY_NAMES: Record<TuiAgent, string> = {
+export const TUI_AGENT_DISPLAY_NAMES: Record<StaticTuiAgent, string> = {
   claude: 'Claude',
   'claude-agent-teams': 'Claude Agent Teams',
   codebuddy: 'CodeBuddy',
@@ -55,9 +55,13 @@ export const TUI_AGENT_DISPLAY_NAMES: Record<TuiAgent, string> = {
 
 /** Canonical agent id list derived from the exhaustive display-name record,
  * so shared modules can enumerate agents without importing renderer code. */
-export const ALL_TUI_AGENTS = Object.keys(TUI_AGENT_DISPLAY_NAMES) as readonly TuiAgent[]
+// oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: the record is keyed by StaticTuiAgent, so its keys are exactly StaticTuiAgent.
+export const ALL_TUI_AGENTS = Object.keys(TUI_AGENT_DISPLAY_NAMES) as readonly StaticTuiAgent[]
 
 /** The display name of `agent`, or null when it names no TUI agent. */
 export function tuiAgentDisplayName(agent: string): string | null {
+  if (isCcProviderAgentId(agent)) {
+    return `CC ${agent.slice(3)}`
+  }
   return Object.entries(TUI_AGENT_DISPLAY_NAMES).find(([id]) => id === agent)?.[1] ?? null
 }

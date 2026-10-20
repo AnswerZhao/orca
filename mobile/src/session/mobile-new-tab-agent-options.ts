@@ -1,9 +1,9 @@
+import { tuiAgentDisplayName } from '../../../src/shared/tui-agent-display-names'
 import type { TuiAgent } from '../../../src/shared/tui-agent'
 import {
   filterEnabledMobileTuiAgents,
   isMobileTuiAgent,
-  MOBILE_TUI_AGENT_AUTO_PICK_ORDER,
-  MOBILE_TUI_AGENT_LABELS
+  MOBILE_TUI_AGENT_AUTO_PICK_ORDER
 } from '../tasks/mobile-tui-agents'
 
 export type MobileNewTabAgentSettings = {
@@ -27,7 +27,7 @@ export function orderMobileNewTabAgents(
     disabledAgents
   ).filter((agent) => detected.has(agent))
 
-  if (defaultAgent && defaultAgent !== 'blank' && enabledDetected.includes(defaultAgent)) {
+  if (defaultAgent && defaultAgent !== 'blank' && enabledDetected.some((a) => a === defaultAgent)) {
     return [defaultAgent, ...enabledDetected.filter((agent) => agent !== defaultAgent)]
   }
   return enabledDetected
@@ -46,6 +46,6 @@ export function buildMobileNewTabAgentOptions(
     settings?.disabledTuiAgents
   ).map((agent) => ({
     agent,
-    label: MOBILE_TUI_AGENT_LABELS[agent]
+    label: tuiAgentDisplayName(agent) ?? agent
   }))
 }

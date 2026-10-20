@@ -52,7 +52,7 @@ type SubmitFolderWorkspaceCreateParams = {
   note: string
   quickAgent: TuiAgent | null
   autoRenameBranchFromWork: boolean | undefined
-  agentCmdOverrides: Record<string, string> | undefined
+  agentCmdOverrides: Partial<Record<TuiAgent, string>> | undefined
   agentArgs?: string | null
   agentEnv?: Record<string, string>
   terminalWindowsShell?: string | null

@@ -46,7 +46,7 @@ export function buildFolderWorkspaceLinkedStartupPlan(args: {
   agent: TuiAgent
   linkedWorkItem: LinkedWorkItemSummary
   note: string
-  agentCmdOverrides: Record<string, string> | undefined
+  agentCmdOverrides: Partial<Record<TuiAgent, string>> | undefined
   agentArgs?: string | null
   agentEnv?: Record<string, string>
   platform: NodeJS.Platform

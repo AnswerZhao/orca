@@ -1,4 +1,4 @@
-import type { TuiAgent } from '../../../src/shared/tui-agent'
+import type { StaticTuiAgent, TuiAgent } from '../../../src/shared/tui-agent'
 import { isTuiAgent } from '../../../src/shared/tui-agent-config'
 import { TUI_AGENT_DISPLAY_NAMES } from '../../../src/shared/tui-agent-display-names'
 import {
@@ -11,9 +11,9 @@ import {
 // Why: one agent registry. Mobile keeps its own names for the favicon domains only, because
 // desktop's live in the renderer catalog next to bundled `?url` icon imports Metro can't load.
 export const MOBILE_TUI_AGENT_AUTO_PICK_ORDER = TUI_AGENT_AUTO_PICK_ORDER
-export const MOBILE_TUI_AGENT_LABELS: Record<TuiAgent, string> = TUI_AGENT_DISPLAY_NAMES
+export const MOBILE_TUI_AGENT_LABELS: Record<StaticTuiAgent, string> = TUI_AGENT_DISPLAY_NAMES
 
-export const MOBILE_TUI_AGENT_FAVICON_DOMAINS: Partial<Record<TuiAgent, string>> = {
+export const MOBILE_TUI_AGENT_FAVICON_DOMAINS: Partial<Record<StaticTuiAgent, string>> = {
   openclaude: 'openclaude.gitlawb.com',
   codebuddy: 'codebuddy.ai',
   grok: 'x.ai',

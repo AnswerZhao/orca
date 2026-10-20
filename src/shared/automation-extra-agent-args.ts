@@ -7,7 +7,7 @@ import {
   type AgentStartupShell
 } from './tui-agent-startup-shell'
 import type { TuiAgent } from './tui-agent'
-import { TUI_AGENT_DISPLAY_NAMES } from './tui-agent-display-names'
+import { tuiAgentDisplayName } from './tui-agent-display-names'
 
 export const EXTRA_AGENT_ARGS_MAX_BYTES = 4096
 export const EXTRA_AGENT_ARGS_HOST_UPDATE_REQUIRED =
@@ -144,7 +144,7 @@ export function parseExtraAgentArgs(args: {
       error: `${text.slice(divergent.start, divergent.end)} uses shell syntax that extra arguments don't allow.`
     }
   }
-  const label = TUI_AGENT_DISPLAY_NAMES[args.agent]
+  const label = tuiAgentDisplayName(args.agent) ?? args.agent
   const allowed = allowedOptionList(options)
   const kinds = new Set<ExtraAgentArgKind>()
   const { tokens } = tokenized

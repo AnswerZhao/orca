@@ -1,4 +1,4 @@
-import type { TuiAgent } from '../../../src/shared/tui-agent'
+import type { StaticTuiAgent } from '../../../src/shared/tui-agent'
 import {
   MOBILE_TUI_AGENT_AUTO_PICK_ORDER,
   MOBILE_TUI_AGENT_FAVICON_DOMAINS,
@@ -6,7 +6,7 @@ import {
 } from './mobile-tui-agents'
 
 export type MobileAgentCatalogEntry = {
-  id: TuiAgent
+  id: StaticTuiAgent
   label: string
   faviconDomain?: string
 }

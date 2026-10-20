@@ -19,7 +19,7 @@ import {
   terminalQuickCommandAgentPromptMaxLength
 } from '../../../src/shared/terminal-quick-command-prompt-limit'
 import { TERMINAL_QUICK_COMMANDS_RUNTIME_CAPABILITY } from '../../../src/shared/protocol-version'
-import { MOBILE_TUI_AGENT_LABELS } from '../tasks/mobile-tui-agents'
+import { tuiAgentDisplayName } from '../../../src/shared/tui-agent-display-names'
 
 // Reuse the canonical desktop quick-command logic (pure, no heavy deps) so
 // mobile behaves identically to desktop. Only genuinely mobile-specific pieces
@@ -91,7 +91,7 @@ export function buildMobileQuickCommandLaunch(
 }
 
 export function getQuickCommandAgentLabel(agent: TuiAgent): string {
-  return MOBILE_TUI_AGENT_LABELS[agent] ?? agent
+  return tuiAgentDisplayName(agent) ?? agent
 }
 
 // The subtitle desktop shows under each quick command: agent prompts read

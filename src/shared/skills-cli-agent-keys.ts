@@ -1,4 +1,4 @@
-import type { TuiAgent } from './tui-agent'
+import { isCcProviderAgentId, type StaticTuiAgent, type TuiAgent } from './tui-agent'
 
 /**
  * The community `skills` CLI's own `--agent` key for each agent Orca detects.
@@ -60,7 +60,7 @@ export const SKILLS_CLI_AGENT_KEY_BY_TUI_AGENT = {
   // Why: DSH ships skills as Cordis plugins, not a `skills --agent` target.
   dsh: null,
   jcode: null
-} satisfies Record<TuiAgent, string | null>
+} satisfies Record<StaticTuiAgent, string | null>
 
 /**
  * The shared `.agents/skills` target every universal agent reads. Always included
@@ -86,7 +86,10 @@ export function isUsableSkillsCliAgentKey(value: string): boolean {
 export function toSkillsCliAgentKeys(detectedAgents: readonly TuiAgent[]): string[] {
   const keys = new Set<string>([SKILLS_CLI_UNIVERSAL_AGENT_KEY])
   for (const agent of detectedAgents) {
-    const key = SKILLS_CLI_AGENT_KEY_BY_TUI_AGENT[agent]
+    // cc-* provider agents run the Claude Code harness and read Claude-owned roots.
+    const key = isCcProviderAgentId(agent)
+      ? SKILLS_CLI_AGENT_KEY_BY_TUI_AGENT.claude
+      : SKILLS_CLI_AGENT_KEY_BY_TUI_AGENT[agent]
     if (key) {
       keys.add(key)
     }

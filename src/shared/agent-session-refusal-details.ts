@@ -20,6 +20,7 @@ import { isAgentJournalResolution } from './agent-session-journal-schemas'
 import { AGENT_SESSION_REWIND_REASONS, type AgentSessionRewindReason } from './agent-session-rewind'
 import type { TuiAgent } from './tui-agent'
 import { TUI_AGENT_DISPLAY_NAMES } from './tui-agent-display-names'
+import { isCcProviderAgentId } from './tui-agent'
 import type {
   AgentSessionOwnerVerdict,
   AgentSessionWireRefusalCode
@@ -274,7 +275,10 @@ function readFact(
 
 /** An agent this build can name; a newer host's agent reads as none. */
 function isNamedAgent(value: unknown): value is TuiAgent {
-  return typeof value === 'string' && Object.hasOwn(TUI_AGENT_DISPLAY_NAMES, value)
+  return (
+    typeof value === 'string' &&
+    (Object.hasOwn(TUI_AGENT_DISPLAY_NAMES, value) || isCcProviderAgentId(value))
+  )
 }
 
 export function isAgentSessionRefusalReason<C extends AgentSessionWireRefusalCode>(

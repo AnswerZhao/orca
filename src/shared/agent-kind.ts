@@ -9,7 +9,7 @@
 // not a sweep across renderer + main.
 
 import type { AgentKind } from './telemetry-events'
-import type { TuiAgent } from './tui-agent'
+import { isCcProviderAgentId, type StaticTuiAgent, type TuiAgent } from './tui-agent'
 
 type ConcreteAgentKind = Exclude<AgentKind, 'other'>
 
@@ -59,13 +59,17 @@ const TUI_AGENT_KIND_BY_AGENT = {
   zcode: 'zcode',
   dsh: 'dsh',
   jcode: 'jcode'
-} satisfies Record<TuiAgent, ConcreteAgentKind>
+} satisfies Record<StaticTuiAgent, ConcreteAgentKind>
 
-// Why: `satisfies Record<TuiAgent, …>` makes the lookup exhaustive at compile
+// Why: `satisfies Record<StaticTuiAgent, …>` makes the lookup exhaustive at compile
 // time, but stale persisted settings or unsafe IPC casts can carry a string
 // outside the union at runtime — fall back to `'other'` so the event still
 // emits instead of failing validation and dropping silently.
 export function tuiAgentToAgentKind(agent: TuiAgent): AgentKind {
+  // cc-* provider agents run the Claude Code harness, so they report as claude-code.
+  if (isCcProviderAgentId(agent)) {
+    return 'claude-code'
+  }
   return TUI_AGENT_KIND_BY_AGENT[agent] ?? 'other'
 }
 

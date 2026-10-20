@@ -1,4 +1,4 @@
-import type { TuiAgent } from './tui-agent'
+import type { StaticTuiAgent } from './tui-agent'
 import { getOrcaCliCommandNameForPlatform } from './orca-cli-command-name'
 import type { TuiAgentConfig } from './tui-agent-config-types'
 
@@ -24,7 +24,7 @@ function resolveTuiAgentConfig(source: TuiAgentConfigSource): TuiAgentConfig {
   }
 }
 
-const TUI_AGENT_CONFIG_SOURCE: Record<TuiAgent, TuiAgentConfigSource> = {
+const TUI_AGENT_CONFIG_SOURCE: Record<StaticTuiAgent, TuiAgentConfigSource> = {
   claude: {
     detectCmd: 'claude',
     promptInjectionMode: 'argv',
@@ -353,29 +353,18 @@ const TUI_AGENT_CONFIG_SOURCE: Record<TuiAgent, TuiAgentConfigSource> = {
   jcode: { detectCmd: 'jcode', launchCmd: 'jcode', expectedProcess: 'jcode', promptInjectionMode: 'stdin-after-start' }
 }
 
-export const TUI_AGENT_CONFIG: Record<TuiAgent, TuiAgentConfig> = Object.fromEntries(
+// oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: Object.fromEntries erases key types; the source record above is already Record<StaticTuiAgent, …>, so the keys are exactly StaticTuiAgent.
+export const TUI_AGENT_CONFIG = Object.fromEntries(
   Object.entries(TUI_AGENT_CONFIG_SOURCE).map(([agent, source]) => [
     agent,
     resolveTuiAgentConfig(source)
   ])
-) as Record<TuiAgent, TuiAgentConfig>
+) as Record<StaticTuiAgent, TuiAgentConfig>
 
-export function isTuiAgent(value: unknown): value is TuiAgent {
-  return typeof value === 'string' && Object.hasOwn(TUI_AGENT_CONFIG, value)
-}
+// Moved to keep this module under the max-lines budget; the import sites stay put.
+export { isTuiAgent, lookupTuiAgentConfig } from './tui-agent-lookup'
+export { getTuiAgentLaunchCommand } from './tui-agent-launch-command'
 
 export function getTuiAgentDetectCommands(config: TuiAgentConfig): string[] {
   return [config.detectCmd, ...(config.detectCmdAliases ?? [])]
-}
-
-export function getTuiAgentLaunchCommand(
-  config: TuiAgentConfig,
-  platform: NodeJS.Platform,
-  opts?: { isRemote?: boolean }
-): string {
-  // Why: local-only orca-ide rename (avoids GNOME Orca clash) must not leak to Linux remotes, whose relay shim is always `orca`.
-  if (opts?.isRemote && platform === 'linux') {
-    return config.launchCmd
-  }
-  return config.launchCmdByPlatform?.[platform] ?? config.launchCmd
 }

@@ -45,6 +45,8 @@ export type RuntimePtySpawnState = {
   codexSelectionTarget: CodexAccountSelectionTarget
   launchCommand: string | undefined
   claudeAuth: ClaudeRuntimeAuthPreparation | null
+  /** ANTHROPIC_* env for a cc-* provider launch; set instead of claudeAuth. */
+  ccProviderEnv: Record<string, string> | null
   shouldPersistHostSessionBinding: boolean
   hostSessionBinding:
     | {
@@ -170,6 +172,7 @@ export function createRuntimePtySpawnState(
     codexSelectionTarget: { runtime: 'host' },
     launchCommand: undefined,
     claudeAuth: null,
+    ccProviderEnv: null,
     shouldPersistHostSessionBinding: false,
     hostSessionBinding: undefined,
     env: undefined,

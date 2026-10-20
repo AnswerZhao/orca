@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { TUI_AGENT_CONFIG } from './tui-agent-config'
-import type { TuiAgent } from './tui-agent'
+import type { StaticTuiAgent } from './tui-agent'
 
 describe('TUI_AGENT_CONFIG', () => {
   it('resolves launchCmd and expectedProcess for every agent', () => {
@@ -19,16 +19,16 @@ describe('TUI_AGENT_CONFIG', () => {
   })
 
   it('keeps explicit overrides where the launch line or process differs from the binary', () => {
-    const overrides: Partial<Record<TuiAgent, Partial<(typeof TUI_AGENT_CONFIG)[TuiAgent]>>> = {
-      'claude-agent-teams': { launchCmd: 'orca claude-teams', expectedProcess: 'claude' },
-      kiro: { launchCmd: 'kiro-cli chat --tui', expectedProcess: 'kiro-cli' },
-      'command-code': { launchCmd: 'command-code --trust' },
-      hermes: { launchCmd: 'hermes --tui' },
-      rovo: { detectCmd: 'acli', launchCmd: 'acli rovodev run', expectedProcess: 'acli' },
-      muse: { launchCmd: 'muse --trust-workspace' }
-    }
-    for (const [agent, expected] of Object.entries(overrides)) {
-      expect(TUI_AGENT_CONFIG[agent as TuiAgent]).toMatchObject(expected)
+    const overrides: [StaticTuiAgent, Partial<(typeof TUI_AGENT_CONFIG)[StaticTuiAgent]>][] = [
+      ['claude-agent-teams', { launchCmd: 'orca claude-teams', expectedProcess: 'claude' }],
+      ['kiro', { launchCmd: 'kiro-cli chat --tui', expectedProcess: 'kiro-cli' }],
+      ['command-code', { launchCmd: 'command-code --trust' }],
+      ['hermes', { launchCmd: 'hermes --tui' }],
+      ['rovo', { detectCmd: 'acli', launchCmd: 'acli rovodev run', expectedProcess: 'acli' }],
+      ['muse', { launchCmd: 'muse --trust-workspace' }]
+    ]
+    for (const [agent, expected] of overrides) {
+      expect(TUI_AGENT_CONFIG[agent]).toMatchObject(expected)
     }
   })
 })
