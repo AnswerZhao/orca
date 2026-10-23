@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`CC_PROVIDER_PRESETS > snapshot: preset env tables 1`] = `
+exports[`LLM_ENDPOINT_PRESETS > snapshot: preset env tables 1`] = `
 [
   {
     "env": {

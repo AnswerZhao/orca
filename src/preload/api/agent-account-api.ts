@@ -10,6 +10,16 @@ import type {
   CcProviderPatch,
   CcProviderPublicView
 } from '../../shared/cc-provider'
+import type {
+  LlmEndpointConfig,
+  LlmEndpointPatch,
+  LlmEndpointPublicView
+} from '../../shared/llm-endpoint'
+import type {
+  AgentProfileConfigInput,
+  AgentProfilePatch,
+  AgentProfilePublicView
+} from '../../shared/agent-profile'
 import type { MiniMaxCredentialsStatus } from '../../shared/minimax-credentials-status'
 
 export type CodexAccountsApi = {
@@ -96,6 +106,23 @@ export type CcProvidersApi = {
   // Why: the patch's apiKey is optional — omitting it keeps the stored key, so edits never
   // need the secret to cross IPC back into the renderer.
   update: (slug: string, patch: CcProviderPatch) => Promise<CcProviderPublicView>
+  delete: (slug: string) => Promise<boolean>
+}
+
+export type LlmEndpointsApi = {
+  // Why: every return value is the redacted view — the apiKey never crosses IPC back to the renderer.
+  list: () => Promise<LlmEndpointPublicView[]>
+  add: (slug: string, config: LlmEndpointConfig) => Promise<LlmEndpointPublicView>
+  // Why: an omitted apiKey keeps the stored one, so edits never need the secret in the renderer.
+  update: (slug: string, patch: LlmEndpointPatch) => Promise<LlmEndpointPublicView>
+  /** Rejects while any agent profile still references the endpoint. */
+  delete: (slug: string) => Promise<boolean>
+}
+
+export type AgentProfilesApi = {
+  list: () => Promise<AgentProfilePublicView[]>
+  add: (slug: string, config: AgentProfileConfigInput) => Promise<AgentProfilePublicView>
+  update: (slug: string, patch: AgentProfilePatch) => Promise<AgentProfilePublicView>
   delete: (slug: string) => Promise<boolean>
 }
 
