@@ -26,6 +26,35 @@
   <img src="docs/assets/readme-hero.jpg" alt="Orca desktop app running agents in parallel worktrees, with the Orca mobile companion app in the corner" width="960" />
 </p>
 
+## Fork Customization: CC Providers
+
+The `cc-providers` branch adds third-party Anthropic-compatible providers while `main` tracks the official upstream repository.
+
+- **Presets and custom endpoints** — Configure Kimi, GLM, DeepSeek, or any Anthropic-compatible endpoint from **Settings → CC Providers**.
+- **Claude Code harness** — Each saved provider becomes a `cc-{slug}` agent that runs through the installed Claude Code CLI with the provider's base URL, API key, and model environment.
+- **Form and JSON editing** — Edit common fields or the complete provider JSON, with validation and masked API keys.
+- **Desktop and CLI support** — Provider agents appear in the agent catalog and can be launched with `orca agent launch --agent cc-{slug}`.
+
+### Sync Upstream into the Customization Branch
+
+Keep custom work on `cc-providers`; do not commit it to `main`. Here, `upstream` is the official `stablyai/orca` repository and `origin` is this fork. If `upstream` is not configured yet, add it once with `git remote add upstream https://github.com/stablyai/orca.git`.
+
+`cc-providers` is kept as a small patch set rebased on top of `main`, so `git log main..cc-providers` always shows the whole customization. Enable `git config rerere.enabled true` once so resolved conflicts are replayed automatically.
+
+To sync `main` with upstream and rebase the customization onto it:
+
+```bash
+git fetch upstream
+git switch main
+git merge --ff-only upstream/main
+git push origin main
+git switch cc-providers
+git rebase main
+git push --force-with-lease origin cc-providers
+```
+
+If a locale catalog conflicts during the rebase, take `main`'s version, re-add the `ccProvider*` / `CcProvidersPane` keys, and run `pnpm run sync:localization-runtime-catalog`.
+
 ## Features
 
 <table>
