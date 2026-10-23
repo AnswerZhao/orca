@@ -5,6 +5,7 @@ import { translate } from '@/i18n/i18n'
 import { getAgentProfileViews, refreshAgentProfiles } from '@/lib/agent-profile-agents'
 import { AGENT_PROFILE_ICON_COMPONENTS } from '@/lib/agent-profile-icons'
 import { cn } from '@/lib/utils'
+import { useAppStore } from '@/store'
 import type { AgentProfilePublicView } from '../../../../shared/agent-profile'
 import type { LlmEndpointPublicView } from '../../../../shared/llm-endpoint'
 import {
@@ -35,6 +36,14 @@ function draftForSelection(
   }
   const view = profiles.find((profile) => profile.slug === selection.slug)
   return view ? draftFromProfileView(view) : null
+}
+
+/** Detection results are cached per context and predate a new profile, so an added or deleted
+ *  ap-* agent would sit in the wrong installed/installable group until the next detect. */
+function redetectLocalAgents(): void {
+  const store = useAppStore.getState()
+  store.clearLocalDetectedAgents()
+  void store.ensureDetectedAgents()
 }
 
 function defaultSelection(profiles: readonly AgentProfilePublicView[]): AgentProfileSelection {
@@ -101,6 +110,7 @@ export function AgentProfilesPane({ endpoints }: AgentProfilesPaneProps): React.
         const payload = draftAddProfilePayload(draft)
         await window.api.agentProfiles.add(payload.slug, payload.config)
         savedSlug = payload.slug
+        redetectLocalAgents()
       } else {
         const { slug, patch } = draftUpdateProfilePatch(draft)
         await window.api.agentProfiles.update(slug, patch)
@@ -131,6 +141,7 @@ export function AgentProfilesPane({ endpoints }: AgentProfilesPaneProps): React.
     setBusy(true)
     try {
       await window.api.agentProfiles.delete(draft.slug)
+      redetectLocalAgents()
       const next = await reload()
       setSelection(defaultSelection(next))
       toast.success(
