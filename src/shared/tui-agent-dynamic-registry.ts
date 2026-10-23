@@ -1,3 +1,4 @@
+import { isAgentProfileAgentId } from './agent-profile-agent-id'
 import { isCcProviderAgentId } from './cc-provider-agent-id'
 import type { TuiAgent } from './tui-agent'
 import {
@@ -8,18 +9,23 @@ import {
 } from './tui-agent-config'
 import { TUI_AGENT_DISPLAY_NAMES } from './tui-agent-display-names'
 
-/** Runtime-registered dynamic agents (`cc-*` provider entries). Populated by main at startup
- *  (and mirrored in the renderer and CLI) from `~/.orca/cc-providers/*.json`.
- *  Invariant: no built-in agent id starts with `cc-`, so registration is prefix-checked only. */
+/** Runtime-registered dynamic agents (`ap-*` agent profiles). Populated by main at startup
+ *  (and mirrored in the renderer and CLI) from `~/.orca/agent-profiles/*.json`.
+ *  Invariant: no built-in agent id starts with `ap-` or `cc-`, so registration is prefix-checked only. */
 const DYNAMIC_TUI_AGENT_CONFIGS = new Map<string, TuiAgentConfig>()
 
 // Why mirror into the static tables instead of widening the TuiAgent type: upstream code
 // indexes TUI_AGENT_CONFIG / TUI_AGENT_DISPLAY_NAMES directly and guards with isTuiAgent
-// (Object.hasOwn on TUI_AGENT_CONFIG), so mirrored keys make cc-* agents resolve everywhere
+// (Object.hasOwn on TUI_AGENT_CONFIG), so mirrored keys make dynamic agents resolve everywhere
 // without touching those call sites. Static keys insert first, so a bare `claude` command
-// still resolves to the static `claude` agent before any cc-* clone.
-// SAFETY: every cast below writes a key that passed isCcProviderAgentId, so it never
+// still resolves to the static `claude` agent before any dynamic clone.
+// SAFETY: every cast below writes a key that passed isDynamicTuiAgentId, so it never
 // collides with a static key; deleting a missing key is a no-op.
+// Transitional: `cc-*` stays accepted until the cc-provider code is removed.
+function isDynamicTuiAgentId(id: string): boolean {
+  return isAgentProfileAgentId(id) || isCcProviderAgentId(id)
+}
+
 function mutableTable<T>(table: object): Record<string, T> {
   // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: see block comment above.
   return table as Record<string, T>
@@ -30,7 +36,7 @@ export function registerDynamicTuiAgent(
   config: TuiAgentConfig,
   displayName: string
 ): boolean {
-  if (!isCcProviderAgentId(id)) {
+  if (!isDynamicTuiAgentId(id)) {
     return false
   }
   DYNAMIC_TUI_AGENT_CONFIGS.set(id, config)

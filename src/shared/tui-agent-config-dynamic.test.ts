@@ -41,7 +41,14 @@ describe('dynamic cc-* provider agents', () => {
     expect(tuiAgentDisplayName('cc-kimi')).toBeNull()
   })
 
-  it('rejects ids that are not cc-* so static agents are never overwritten', () => {
+  it('registers ap-* profile agents', () => {
+    expect(registerDynamicTuiAgent('ap-architect', CLAUDE_LIKE, 'Architect')).toBe(true)
+    expect(isTuiAgent('ap-architect')).toBe(true)
+    expect(unregisterDynamicTuiAgent('ap-architect')).toBe(true)
+    expect(isTuiAgent('ap-architect')).toBe(false)
+  })
+
+  it('rejects ids that are not dynamic so static agents are never overwritten', () => {
     expect(registerDynamicTuiAgent('kimi', CLAUDE_LIKE, 'Kimi')).toBe(false)
     expect(registerDynamicTuiAgent('claude', CLAUDE_LIKE, 'Fake')).toBe(false)
     expect(tuiAgentDisplayName('claude')).toBe('Claude')
