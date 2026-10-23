@@ -7,7 +7,7 @@ import {
 } from '../../shared/tui-agent-dynamic-registry'
 import { resolveBareAgentLaunchCommand } from './runtime-agent-launch-resolution'
 
-describe('resolveBareAgentLaunchCommand with cc-* providers registered', () => {
+describe('resolveBareAgentLaunchCommand with ap-* profiles registered', () => {
   afterEach(() => {
     for (const id of listDynamicTuiAgentIds()) {
       unregisterDynamicTuiAgent(id)
@@ -15,7 +15,7 @@ describe('resolveBareAgentLaunchCommand with cc-* providers registered', () => {
   })
 
   it('still resolves a bare claude command to the static claude agent', () => {
-    registerDynamicTuiAgent('cc-kimi', { ...TUI_AGENT_CONFIG.claude }, 'CC Kimi')
+    registerDynamicTuiAgent('ap-architect', { ...TUI_AGENT_CONFIG.claude }, 'Architect')
     expect(
       resolveBareAgentLaunchCommand({
         command: 'claude',

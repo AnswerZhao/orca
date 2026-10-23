@@ -10,7 +10,7 @@ import { getProvider } from '../provider/registry'
 import { resolvePtySpawnStartupTarget } from '../spawn-startup-target'
 import type { PtyIpcSpawnState } from './spawn-state'
 import { getConnectionExecutionHostId } from '../../../../shared/execution-host'
-import { resolveCcProviderSpawnEnv } from '../../../cc-providers/cc-provider-spawn-env'
+import { prepareClaudeLaunchAuth } from '../../../agent-profiles/agent-profile-spawn-auth'
 
 export async function preparePtyIpcSpawnPreflight(ctx: PtyIpcSpawnState): Promise<void> {
   const args = ctx.args
@@ -96,12 +96,15 @@ export async function preparePtyIpcSpawnPreflight(ctx: PtyIpcSpawnState): Promis
   ctx.codexSelectionTarget = target.codexSelectionTarget
   ctx.spawnTiming.mark('preflight')
   args.env = withClaudeProfileTerminalEnv(args.env, ctx.codexSelectionTarget)
-  // Why: a cc-* provider agent brings its own ANTHROPIC_* env; the official Claude
-  // account auth (claudeAuth) must not run for it or it would overwrite those vars.
-  ctx.ccProviderEnv = ctx.isClaudeLaunch ? resolveCcProviderSpawnEnv(args.launchAgent) : null
-  ctx.claudeAuth =
-    ctx.isClaudeLaunch && !ctx.ccProviderEnv && ctx.deps.prepareClaudeAuth
-      ? await ctx.deps.prepareClaudeAuth(ctx.codexSelectionTarget)
-      : null
+  const prepareClaudeAuth = ctx.deps.prepareClaudeAuth
+  const launchAuth = await prepareClaudeLaunchAuth({
+    isClaudeLaunch: ctx.isClaudeLaunch,
+    launchAgent: args.launchAgent,
+    prepareClaudeAuth: prepareClaudeAuth
+      ? () => prepareClaudeAuth(ctx.codexSelectionTarget)
+      : undefined
+  })
+  ctx.llmEndpointEnv = launchAuth.llmEndpointEnv
+  ctx.claudeAuth = launchAuth.claudeAuth
   ctx.spawnTiming.mark('auth')
 }

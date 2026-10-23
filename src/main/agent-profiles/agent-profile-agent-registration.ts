@@ -5,31 +5,30 @@ import {
   registerDynamicTuiAgent,
   unregisterDynamicTuiAgent
 } from '../../shared/tui-agent-dynamic-registry'
-import { ccProviderDisplayName } from '../../shared/cc-provider'
-import { listCcProviders } from './cc-provider-store'
+import { listAgentProfiles } from './agent-profile-store'
 
-export type CcProviderAgentEntry = {
+export type AgentProfileAgentEntry = {
   id: string
   config: TuiAgentConfig
   displayName: string
 }
 
-/** Loads cc-* agent entries from `~/.orca/cc-providers/*.json` without touching the
- *  registry; cc-* agents inherit the claude harness config. Callers running in a separate
+/** Loads ap-* agent entries from `~/.orca/agent-profiles/*.json` without touching the
+ *  registry; ap-* agents inherit the claude harness config. Callers running in a separate
  *  bundle (the tsc-built CLI vs the electron-vite main bundle) each carry their own copy
  *  of the dynamic registry module, so cross-bundle callers must register these entries
- *  into their own registry copy instead of relying on `syncCcProviderAgents`. */
-export function loadCcProviderAgentEntries(dir?: string): CcProviderAgentEntry[] {
-  return listCcProviders(dir).map((provider) => ({
-    id: provider.id,
+ *  into their own registry copy instead of relying on `syncAgentProfileAgents`. */
+export function loadAgentProfileAgentEntries(dir?: string): AgentProfileAgentEntry[] {
+  return listAgentProfiles(dir).map((profile) => ({
+    id: profile.id,
     config: { ...TUI_AGENT_CONFIG.claude },
-    displayName: ccProviderDisplayName(provider.name)
+    displayName: profile.name
   }))
 }
 
-/** Reconciles this process's dynamic agent registry with `~/.orca/cc-providers/*.json`. */
-export function syncCcProviderAgents(dir?: string): string[] {
-  const entries = loadCcProviderAgentEntries(dir)
+/** Reconciles this process's dynamic agent registry with `~/.orca/agent-profiles/*.json`. */
+export function syncAgentProfileAgents(dir?: string): string[] {
+  const entries = loadAgentProfileAgentEntries(dir)
   const desired = new Set<string>(entries.map((entry) => entry.id))
   for (const id of listDynamicTuiAgentIds()) {
     if (!desired.has(id)) {

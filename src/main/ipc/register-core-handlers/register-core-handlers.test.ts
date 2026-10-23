@@ -38,7 +38,7 @@ const {
   registerOpenCodeGoCredentialsHandlersMock,
   registerMiniMaxCredentialsHandlersMock,
   registerZcodePlanCredentialsHandlersMock,
-  registerCcProviderHandlersMock,
+  registerAgentProfileHandlersMock,
   registerGrokAccountHandlersMock,
   registerCursorAccountHandlersMock,
   registerClipboardHandlersMock,
@@ -110,7 +110,7 @@ const {
   registerOpenCodeGoCredentialsHandlersMock: vi.fn(),
   registerMiniMaxCredentialsHandlersMock: vi.fn(),
   registerZcodePlanCredentialsHandlersMock: vi.fn(),
-  registerCcProviderHandlersMock: vi.fn(),
+  registerAgentProfileHandlersMock: vi.fn(),
   registerGrokAccountHandlersMock: vi.fn(),
   registerCursorAccountHandlersMock: vi.fn(),
   registerClipboardHandlersMock: vi.fn(),
@@ -367,8 +367,8 @@ vi.mock('../zcode-plan-credentials', () => ({
   registerZcodePlanCredentialsHandlers: registerZcodePlanCredentialsHandlersMock
 }))
 
-vi.mock('../cc-providers', () => ({
-  registerCcProviderHandlers: registerCcProviderHandlersMock
+vi.mock('../agent-profiles', () => ({
+  registerAgentProfileHandlers: registerAgentProfileHandlersMock
 }))
 
 vi.mock('../grok-accounts', () => ({
@@ -488,7 +488,7 @@ describe('registerCoreHandlers', () => {
     registerOpenCodeGoCredentialsHandlersMock.mockReset()
     registerMiniMaxCredentialsHandlersMock.mockReset()
     registerZcodePlanCredentialsHandlersMock.mockReset()
-    registerCcProviderHandlersMock.mockReset()
+    registerAgentProfileHandlersMock.mockReset()
     registerClipboardHandlersMock.mockReset()
     setTrustedClipboardRendererWebContentsIdMock.mockReset()
     registerUpdaterHandlersMock.mockReset()
@@ -600,7 +600,7 @@ describe('registerCoreHandlers', () => {
     expect(registerOpenCodeGoCredentialsHandlersMock).toHaveBeenCalledWith(rateLimits)
     expect(registerMiniMaxCredentialsHandlersMock).toHaveBeenCalledWith(rateLimits)
     expect(registerZcodePlanCredentialsHandlersMock).toHaveBeenCalledWith(rateLimits)
-    expect(registerCcProviderHandlersMock).toHaveBeenCalled()
+    expect(registerAgentProfileHandlersMock).toHaveBeenCalled()
     expect(registerGrokAccountHandlersMock).toHaveBeenCalled()
     expect(registerCursorAccountHandlersMock).toHaveBeenCalled()
     expect(registerRateLimitHandlersMock).toHaveBeenCalledWith(rateLimits, codexAccounts)

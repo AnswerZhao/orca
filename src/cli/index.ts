@@ -16,7 +16,7 @@ import {
 } from './execution-host-flag'
 import { fetchSshTargetSummaries, listSshTargets } from './host-selector-alternatives'
 import { reportCliError } from './cli-error'
-import { loadCcProviderAgentEntries } from '../main/cc-providers/cc-provider-agent-registration'
+import { loadAgentProfileAgentEntries } from '../main/agent-profiles/agent-profile-agent-registration'
 import { registerDynamicTuiAgent } from '../shared/tui-agent-dynamic-registry'
 import { printHelp } from './help'
 import type { RuntimeClient } from './runtime-client'
@@ -87,13 +87,13 @@ export async function main(
     await runClaudeTeams(argv.slice(1), cwd)
     return
   }
-  // Why: parseCliAgent and the model/effort checks resolve cc-* provider agents through
+  // Why: parseCliAgent and the model/effort checks resolve ap-* profile agents through
   // the dynamic registry, which starts empty in this short-lived process; mirror
-  // ~/.orca/cc-providers the same way the Electron main process does at startup.
+  // ~/.orca/agent-profiles the same way the Electron main process does at startup.
   // The tsc-built CLI and the electron-vite main bundle each carry their own copy of the
   // registry module, so register into this process's copy explicitly instead of calling
-  // syncCcProviderAgents (which would write the main bundle's copy).
-  for (const entry of loadCcProviderAgentEntries()) {
+  // syncAgentProfileAgents (which would write the main bundle's copy).
+  for (const entry of loadAgentProfileAgentEntries()) {
     registerDynamicTuiAgent(entry.id, entry.config, entry.displayName)
   }
   const parsed = normalizeCommandPositionals(
