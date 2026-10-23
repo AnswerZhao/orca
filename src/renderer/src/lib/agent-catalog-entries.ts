@@ -1,7 +1,6 @@
 import { primaryAgentCatalogEntries } from './agent-catalog-entries-primary'
 import { secondaryAgentCatalogEntries } from './agent-catalog-entries-secondary'
-import { getCcProviderViews } from './cc-provider-agents'
-import { translate } from '@/i18n/i18n'
+import { getAgentProfileViews } from './agent-profile-agents'
 import type { AgentCatalogEntry } from './agent-catalog'
 import type { TuiAgent } from '../../../shared/tui-agent'
 
@@ -10,13 +9,13 @@ export function buildAgentCatalogEntries(): AgentCatalogEntry[] {
   return [
     ...primaryAgentCatalogEntries(),
     ...secondaryAgentCatalogEntries(),
-    // Why: user-defined cc-* providers ride the claude binary and reuse its icon.
-    ...getCcProviderViews().map((view): AgentCatalogEntry => ({
-      // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: applyCcProviderViews registers every view before it is listed, so isTuiAgent holds for view.id.
+    // Why: user-defined ap-* profiles ride the claude binary; the label is the profile's own name.
+    ...getAgentProfileViews().map((view): AgentCatalogEntry => ({
+      // oxlint-disable-next-line typescript/consistent-type-assertions -- SAFETY: applyAgentProfileViews registers every view before it is listed, so isTuiAgent holds for view.id.
       id: view.id as TuiAgent,
-      label: translate('auto.lib.agent.catalog.ccProvider', 'CC {{name}}', { name: view.name }),
+      label: view.name,
       cmd: 'claude',
-      homepageUrl: view.env.ANTHROPIC_BASE_URL
+      homepageUrl: 'https://code.claude.com/docs'
     }))
   ]
 }

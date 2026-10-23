@@ -1,28 +1,28 @@
 import { z } from 'zod'
 import {
-  CC_PROVIDER_SLUG_PATTERN,
-  CcProviderConfigSchema,
-  type CcProviderConfig,
-  type CcProviderPublicView
-} from '../../../../shared/cc-provider'
-import type { CcProviderPreset } from '../../../../shared/cc-provider-presets'
+  LLM_ENDPOINT_SLUG_PATTERN,
+  LlmEndpointConfigSchema,
+  type LlmEndpointConfig,
+  type LlmEndpointPublicView
+} from '../../../../shared/llm-endpoint'
+import type { LlmEndpointPreset } from '../../../../shared/llm-endpoint-presets'
 import { translate } from '@/i18n/i18n'
 
 /** Placeholder shown in place of the real key when editing; saving with it keeps the stored key. */
-export const CC_PROVIDER_API_KEY_MASK = '••••••••'
+export const LLM_ENDPOINT_API_KEY_MASK = '••••••••'
 
 /** Form columns edit only these env keys; everything else lives only in the JSON column. */
-export const CC_PROVIDER_FORM_ENV_KEYS = [
+export const LLM_ENDPOINT_FORM_ENV_KEYS = [
   'ANTHROPIC_BASE_URL',
   'ANTHROPIC_MODEL',
   'ANTHROPIC_SMALL_FAST_MODEL'
 ] as const
 
-export type CcProviderFormEnvKey = (typeof CC_PROVIDER_FORM_ENV_KEYS)[number]
+export type LlmEndpointFormEnvKey = (typeof LLM_ENDPOINT_FORM_ENV_KEYS)[number]
 
-export type CcProviderDraft = {
+export type LlmEndpointDraft = {
   mode: 'add' | 'edit'
-  /** Locked after creation — it names the on-disk file and the agent id. */
+  /** Locked after creation — it names the on-disk file that agent profiles reference. */
   slug: string
   name: string
   preset?: string
@@ -36,7 +36,7 @@ export type CcProviderDraft = {
 
 /**
  * Loose shape of the JSON column while it is being edited (unknown keys pass through; the
- * strict CcProviderConfigSchema decides validity at save time). Parsed with zod instead of
+ * strict LlmEndpointConfigSchema decides validity at save time). Parsed with zod instead of
  * type assertions so the quality gate's no-assertions rule holds.
  */
 const DraftJsonSchema = z.looseObject({
@@ -48,7 +48,10 @@ const DraftJsonSchema = z.looseObject({
 
 type ParsedDraftJson = z.infer<typeof DraftJsonSchema>
 
-function parseDraftJson(text: string): { data: ParsedDraftJson | null; error: string | null } {
+function parseDraftJson(text: string): {
+  data: ParsedDraftJson | null
+  error: string | null
+} {
   let raw: unknown
   try {
     raw = JSON.parse(text)
@@ -56,7 +59,7 @@ function parseDraftJson(text: string): { data: ParsedDraftJson | null; error: st
     return {
       data: null,
       error: translate(
-        'auto.components.settings.CcProvidersPane.invalidJson',
+        'auto.components.settings.LlmEndpointsPane.invalidJson',
         'Invalid JSON syntax'
       )
     }
@@ -67,7 +70,7 @@ function parseDraftJson(text: string): { data: ParsedDraftJson | null; error: st
     : {
         data: null,
         error: translate(
-          'auto.components.settings.CcProvidersPane.jsonObjectRequired',
+          'auto.components.settings.LlmEndpointsPane.jsonObjectRequired',
           'JSON must be an object with string fields'
         )
       }
@@ -80,7 +83,7 @@ function draftJson(draft: {
   env: Record<string, string>
   mode: 'add' | 'edit'
 }): string {
-  const apiKey = draft.apiKey || (draft.mode === 'edit' ? CC_PROVIDER_API_KEY_MASK : '')
+  const apiKey = draft.apiKey || (draft.mode === 'edit' ? LLM_ENDPOINT_API_KEY_MASK : '')
   return JSON.stringify(
     {
       name: draft.name,
@@ -93,7 +96,7 @@ function draftJson(draft: {
   )
 }
 
-export function draftFromPreset(preset: CcProviderPreset): CcProviderDraft {
+export function draftFromPreset(preset: LlmEndpointPreset): LlmEndpointDraft {
   const base = {
     mode: 'add' as const,
     slug: preset.key,
@@ -105,12 +108,18 @@ export function draftFromPreset(preset: CcProviderPreset): CcProviderDraft {
   return { ...base, json: draftJson(base), jsonError: null }
 }
 
-export function draftBlank(): CcProviderDraft {
-  const base = { mode: 'add' as const, slug: '', name: '', apiKey: '', env: {} }
+export function draftBlank(): LlmEndpointDraft {
+  const base = {
+    mode: 'add' as const,
+    slug: '',
+    name: '',
+    apiKey: '',
+    env: {}
+  }
   return { ...base, json: draftJson(base), jsonError: null }
 }
 
-export function draftFromView(view: CcProviderPublicView): CcProviderDraft {
+export function draftFromView(view: LlmEndpointPublicView): LlmEndpointDraft {
   const base = {
     mode: 'edit' as const,
     slug: view.slug,
@@ -122,7 +131,7 @@ export function draftFromView(view: CcProviderPublicView): CcProviderDraft {
   return { ...base, json: draftJson(base), jsonError: null }
 }
 
-export function slugifyCcProviderName(name: string): string {
+export function slugifyLlmEndpointName(name: string): string {
   return (
     name
       .toLowerCase()
@@ -135,11 +144,11 @@ export function slugifyCcProviderName(name: string): string {
 /** Form → JSON: merges the field into the draft and regenerates the JSON text, unless the
  *  JSON column is mid-edit with a syntax error (then it would clobber the user's text). */
 export function applyDraftFormField(
-  draft: CcProviderDraft,
-  field: 'name' | 'apiKey' | 'slug' | CcProviderFormEnvKey,
+  draft: LlmEndpointDraft,
+  field: 'name' | 'apiKey' | 'slug' | LlmEndpointFormEnvKey,
   value: string
-): CcProviderDraft {
-  const next: CcProviderDraft = { ...draft, env: { ...draft.env } }
+): LlmEndpointDraft {
+  const next: LlmEndpointDraft = { ...draft, env: { ...draft.env } }
   if (field === 'name' || field === 'apiKey' || field === 'slug') {
     next[field] = value
   } else {
@@ -158,14 +167,14 @@ export function applyDraftFormField(
 
 /** JSON → form: a parseable text refills the form fields; a broken one is flagged and the
  *  form stays untouched so the user can keep fixing the text. */
-export function applyDraftJsonText(draft: CcProviderDraft, text: string): CcProviderDraft {
+export function applyDraftJsonText(draft: LlmEndpointDraft, text: string): LlmEndpointDraft {
   const { data, error } = parseDraftJson(text)
   if (!data) {
     return { ...draft, json: text, jsonError: error }
   }
   const env = data.env ? { ...data.env } : draft.env
   const apiKey =
-    data.apiKey !== undefined && data.apiKey !== CC_PROVIDER_API_KEY_MASK
+    data.apiKey !== undefined && data.apiKey !== LLM_ENDPOINT_API_KEY_MASK
       ? data.apiKey
       : draft.apiKey
   return {
@@ -179,8 +188,8 @@ export function applyDraftJsonText(draft: CcProviderDraft, text: string): CcProv
 }
 
 /** Validates the JSON column (the save-time truth). Returns an error message, or null. */
-export function validateCcProviderDraft(
-  draft: CcProviderDraft,
+export function validateLlmEndpointDraft(
+  draft: LlmEndpointDraft,
   existingSlugs: readonly string[]
 ): string | null {
   if (draft.jsonError) {
@@ -190,13 +199,13 @@ export function validateCcProviderDraft(
   if (!data) {
     return (
       error ??
-      translate('auto.components.settings.CcProvidersPane.invalidJson', 'Invalid JSON syntax')
+      translate('auto.components.settings.LlmEndpointsPane.invalidJson', 'Invalid JSON syntax')
     )
   }
   const env = data.env ?? {}
   if (draft.mode === 'add') {
-    const slug = draft.slug.trim() || slugifyCcProviderName(draft.name)
-    if (!CC_PROVIDER_SLUG_PATTERN.test(slug)) {
+    const slug = draft.slug.trim() || slugifyLlmEndpointName(draft.name)
+    if (!LLM_ENDPOINT_SLUG_PATTERN.test(slug)) {
       return 'Slug: 1-30 chars of lowercase letters, digits, or dashes; starts with a letter or digit'
     }
     if (existingSlugs.includes(slug)) {
@@ -206,7 +215,7 @@ export function validateCcProviderDraft(
   const apiKeyFromJson = data.apiKey?.trim() ?? ''
   const effectiveKey =
     draft.apiKey.trim() ||
-    (apiKeyFromJson && apiKeyFromJson !== CC_PROVIDER_API_KEY_MASK ? apiKeyFromJson : '')
+    (apiKeyFromJson && apiKeyFromJson !== LLM_ENDPOINT_API_KEY_MASK ? apiKeyFromJson : '')
   if (draft.mode === 'add' && !effectiveKey) {
     return 'API key is required'
   }
@@ -217,11 +226,11 @@ export function validateCcProviderDraft(
     apiKey: effectiveKey || 'sk-unchanged',
     env
   }
-  const result = CcProviderConfigSchema.safeParse(candidate)
-  return result.success ? null : (result.error.issues[0]?.message ?? 'Invalid provider config')
+  const result = LlmEndpointConfigSchema.safeParse(candidate)
+  return result.success ? null : (result.error.issues[0]?.message ?? 'Invalid endpoint config')
 }
 
-function requireDraftJson(draft: CcProviderDraft): ParsedDraftJson {
+function requireDraftJson(draft: LlmEndpointDraft): ParsedDraftJson {
   const { data } = parseDraftJson(draft.json)
   if (!data) {
     throw new Error('draft JSON must be valid before building a payload')
@@ -229,15 +238,15 @@ function requireDraftJson(draft: CcProviderDraft): ParsedDraftJson {
   return data
 }
 
-export function draftAddPayload(draft: CcProviderDraft): {
+export function draftAddPayload(draft: LlmEndpointDraft): {
   slug: string
-  config: CcProviderConfig
+  config: LlmEndpointConfig
 } {
   const data = requireDraftJson(draft)
   const name = (data.name ?? draft.name).trim()
   const apiKey = draft.apiKey.trim() || (data.apiKey ?? '')
   return {
-    slug: draft.slug.trim() || slugifyCcProviderName(name),
+    slug: draft.slug.trim() || slugifyLlmEndpointName(name),
     config: {
       name,
       ...(draft.preset ? { preset: draft.preset } : {}),
@@ -248,14 +257,19 @@ export function draftAddPayload(draft: CcProviderDraft): {
 }
 
 /** Edit payload: apiKey rides along only when the user typed a new one. */
-export function draftUpdatePatch(draft: CcProviderDraft): {
+export function draftUpdatePatch(draft: LlmEndpointDraft): {
   slug: string
-  patch: { name: string; preset?: string; apiKey?: string; env: Record<string, string> }
+  patch: {
+    name: string
+    preset?: string
+    apiKey?: string
+    env: Record<string, string>
+  }
 } {
   const data = requireDraftJson(draft)
   const jsonKey = data.apiKey?.trim() ?? ''
   const newKey =
-    draft.apiKey.trim() || (jsonKey && jsonKey !== CC_PROVIDER_API_KEY_MASK ? jsonKey : '')
+    draft.apiKey.trim() || (jsonKey && jsonKey !== LLM_ENDPOINT_API_KEY_MASK ? jsonKey : '')
   return {
     slug: draft.slug,
     patch: {

@@ -661,8 +661,7 @@
           "freebuff_label": "Freebuff",
           "dsh_label": "DeepSeek Harness",
           "qoder_label": "Qoder CLI",
-          "qoder_cn_label": "Qoder CLI China",
-          "ccProvider": "CC {{name}}"
+          "qoder_cn_label": "Qoder CLI China"
         },
         "skill": {
           "cli": {
@@ -1232,8 +1231,8 @@
         "shareSkillsTitle": "分享技能",
         "shareSkillsDescription": "通过未列出的链接分享您的技能。任何拥有它的人都可以安装它们。",
         "floatingWorkspaceWebDescription": "全局终端和 Markdown 选项卡。",
-        "ccProvidersTitle": "CC Providers",
-        "ccProvidersDescription": "把 Claude Code harness 接到第三方 Anthropic 兼容 provider(Kimi、GLM、DeepSeek 或自定义)。"
+        "agentProfilesTitle": "Agent Profiles",
+        "agentProfilesDescription": "带有独立模型来源、模型、模式和角色提示词的 Claude Code agent，以及它们可用的 LLM 端点。"
       },
       "useAppMenuPaste": {
         "pasteTooLarge": "粘贴内容过大。"
@@ -8555,8 +8554,8 @@
           "linearDescription": "Linear 在 Orca 中的工作方式、设置清单、智能体技能和提示词示例。",
           "tasksDescription": "连接提供商、安装 Linear 技能并选择要在任务中显示的内容。",
           "remoteServersDescription": "在另一台机器上运行 Orca，并在这里使用它。",
-          "ccProvidersTitle": "CC Providers",
-          "ccProvidersDescription": "第三方 Anthropic 兼容 provider。每个 provider 生成一个 cc-{slug} agent，用你的 env 和 key 跑 Claude Code harness。"
+          "agentProfilesTitle": "Agent Profiles",
+          "agentProfilesDescription": "可复用的 Claude Code 配置。每个 Profile 会成为一个 ap-{slug} agent，带有自己的模型来源、模型、模式和角色提示词。"
         },
         "SettingsFormControls": {
           "42a4d15a30": "没有匹配的字体。",
@@ -12943,51 +12942,108 @@
           "lan": "局域网 · {{address}}",
           "loopback": "此电脑 · {{address}}"
         },
-        "CcProvidersPane": {
-          "added": "Provider 已添加",
-          "saved": "Provider 已保存",
-          "deleted": "Provider 已删除",
+        "LlmEndpointsPane": {
+          "added": "端点已添加",
+          "saved": "端点已保存",
+          "deleted": "端点已删除",
           "configured": "已配置",
           "noneConfigured": "暂无",
           "add": "添加",
           "custom": "自定义",
-          "pickOne": "在左侧选择 provider 查看或编辑，或从预设快速添加。",
+          "pickOne": "在左侧选择端点查看或编辑，或从预设快速添加。",
+          "invalidJson": "JSON 语法无效",
+          "jsonObjectRequired": "JSON 必须是字段值为字符串的对象",
           "formView": "表单",
           "fixJsonFirst": "请先修复 JSON 语法错误",
           "confirmDelete": "确认删除",
           "delete": "删除",
-          "name": "显示名称",
-          "slugPlaceholder": "留空则按名称自动派生",
-          "apiKey": "API key",
-          "deepseekModelHint": "(服务端映射，无需填写)",
-          "formFootnote": "其余 env 键(如 API_TIMEOUT_MS)在 JSON 视图里编辑；表单只同步这五个常用字段。",
-          "jsonEditFootnote": "apiKey 显示 •••••••• 时保存不改动它；粘贴真实 key 即轮换。",
-          "jsonAddFootnote": "可以直接粘贴整段 provider JSON，保存时校验。",
-          "jsonOk": "格式有效 · env 键白名单：ANTHROPIC_* / CLAUDE_CODE_* / API_TIMEOUT_MS",
-          "saveChanges": "保存更改",
-          "save": "保存",
-          "invalidJson": "JSON 语法无效",
-          "jsonObjectRequired": "JSON 必须是字段值为字符串的对象",
-          "ccPrefix": "cc-",
-          "jsonEditorLabel": "JSON",
           "basicsSection": "基本信息",
-          "nameHint": "显示为 CC {{name}}",
+          "name": "显示名称",
+          "nameHint": "在 Agent Profile 的模型来源中显示",
           "slugTitle": "Slug",
+          "slugPlaceholder": "留空则按名称自动派生",
           "connectionSection": "认证与端点",
+          "apiKey": "API key",
           "apiKeyKeepHint": "留空则保持当前 key",
           "modelsSection": "模型",
           "modelTitle": "模型",
-          "smallModelTitle": "小模型"
+          "deepseekModelHint": "(服务端映射，无需填写)",
+          "smallModelTitle": "小模型",
+          "formFootnote": "其余 env 键(如 API_TIMEOUT_MS)在 JSON 视图里编辑；表单只同步这五个常用字段。",
+          "jsonEditorLabel": "JSON",
+          "jsonEditFootnote": "apiKey 显示 •••••••• 时保存不改动它；粘贴真实 key 即轮换。",
+          "jsonAddFootnote": "可以直接粘贴整段端点 JSON，保存时校验。",
+          "jsonOk": "格式有效 · env 键白名单：ANTHROPIC_* / CLAUDE_CODE_* / API_TIMEOUT_MS",
+          "saveChanges": "保存更改",
+          "save": "保存"
         },
-        "ccProviders": {
+        "AgentProfilesPane": {
+          "added": "Profile 已添加",
+          "saved": "Profile 已保存",
+          "deleted": "Profile 已删除",
+          "profiles": "已配置",
+          "noneConfigured": "暂无",
+          "newProfile": "新建 Profile",
+          "nameRequired": "请填写名称",
+          "slugRequired": "请手动填写 slug：名称中没有可用于生成 slug 的字母或数字",
+          "slugInvalid": "Slug 为 1-30 位小写字母、数字或连字符，且以字母或数字开头",
+          "slugTaken": "Slug \"{{slug}}\" 已存在，请换一个",
+          "endpointMissing": "端点 \"{{endpoint}}\" 已不存在，请重新选择模型来源",
+          "invalid": "Profile 配置无效",
+          "modeManual": "手动确认",
+          "modeAcceptEdits": "自动接受编辑",
+          "modeAuto": "自动",
+          "modePlan": "计划",
+          "modeDontAsk": "不询问",
+          "modeBypassPermissions": "跳过权限检查",
+          "effortLow": "低",
+          "effortMedium": "中",
+          "effortHigh": "高",
+          "effortXhigh": "很高",
+          "effortMax": "最高",
+          "modelEndpointHint": "留空则使用端点的 ANTHROPIC_MODEL",
+          "modelSubscriptionHint": "留空则使用账户默认模型",
+          "modelPlaceholder": "账户默认",
+          "confirmDelete": "确认删除",
+          "delete": "删除",
+          "identitySection": "基本信息",
+          "icon": "图标",
+          "name": "名称",
+          "nameHint": "在 agent 选择器中显示",
+          "slug": "Slug",
+          "slugLockedHint": "创建后不可修改",
+          "slugHint": "按名称生成建议值；名称没有字母时请手动填写",
+          "runtimeSection": "运行配置",
+          "provider": "Provider",
+          "providerHint": "Profile 使用本机安装的 Claude Code CLI 运行",
+          "source": "模型来源",
+          "sourceHint": "已登录的账户，或已保存的 LLM 端点",
+          "sourceSubscription": "Claude 账户(订阅)",
+          "model": "模型",
+          "mode": "模式",
+          "effort": "思考强度",
+          "effortDefault": "Claude Code 默认",
+          "promptSection": "角色提示词",
+          "rolePrompt": "角色提示词",
+          "rolePromptHint": "追加到 Claude Code 的系统提示词之后",
+          "rolePromptPlaceholder": "你是一名软件架构师。写代码之前，…",
+          "rolePromptNewSessions": "修改只对新会话生效；已在运行的会话沿用启动时的提示词。",
+          "rolePromptRemote": "在 SSH 或 WSL 下不生效；其余设置照常生效。",
+          "footerHint": "保存后，Profile 会作为独立 agent 出现在 agent 选择器中。",
+          "saveChanges": "保存更改",
+          "save": "保存"
+        },
+        "AgentProfilesSettingsPane": {
+          "endpointsTitle": "LLM 端点",
+          "endpointsDescription": "Anthropic 兼容端点(Kimi、GLM、DeepSeek、自定义)，Profile 可让 Claude Code 通过它们运行。API key 只保存在本机。",
+          "profilesTitle": "Agent Profiles",
+          "profilesDescription": "命名的 Claude Code 配置：模型来源、模型、模式、思考强度和角色提示词。每个 Profile 都会出现在 agent 选择器中。"
+        },
+        "agentProfiles": {
           "search": {
-            "presets": {
-              "title": "内置预设",
-              "description": "从内置预设(Kimi、GLM、DeepSeek)添加 provider，只需填 API key。"
-            },
-            "custom": {
-              "title": "自定义 provider",
-              "description": "直接编辑 provider JSON，接入任意 Anthropic 兼容端点。"
+            "endpoints": {
+              "title": "LLM 端点",
+              "description": "从预设(Kimi、GLM、DeepSeek)或自定义 JSON 添加 Anthropic 兼容端点。"
             },
             "kw": {
               "kimi": "kimi 月之暗面",
@@ -12997,8 +13053,16 @@
               "deepseek": "deepseek 深度求索",
               "anthropic": "兼容 anthropic",
               "baseUrl": "接口地址",
-              "env": "环境变量",
-              "apiKey": "密钥"
+              "apiKey": "密钥",
+              "role": "角色提示词",
+              "systemPrompt": "系统提示词",
+              "model": "模型",
+              "permissionMode": "权限模式",
+              "effort": "思考强度"
+            },
+            "profiles": {
+              "title": "Agent Profiles",
+              "description": "创建带有独立模型、权限模式、思考强度和角色提示词的 Claude Code agent。"
             }
           }
         }

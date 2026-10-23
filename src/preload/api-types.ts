@@ -1,6 +1,5 @@
 import type {
   AgentProfilesApi,
-  CcProvidersApi,
   ClaudeAccountsApi,
   CodexAccountsApi,
   CodexConfigSyncApi,
@@ -154,7 +153,6 @@ export type PreloadApi = {
   }
   minimaxCredentials: MinimaxCredentialsApi
   zcodePlanCredentials: ZcodePlanCredentialsApi
-  ccProviders: CcProvidersApi
   llmEndpoints: LlmEndpointsApi
   agentProfiles: AgentProfilesApi
   grokAccounts: GrokAccountsApi

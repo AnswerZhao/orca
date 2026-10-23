@@ -75,7 +75,6 @@ import { rateLimitsApi } from './api/rate-limits-bridge'
 import { opencodeGoCredentialsApi } from './api/opencode-go-credentials-bridge'
 import { minimaxCredentialsApi } from './api/minimax-credentials-bridge'
 import { zcodePlanCredentialsApi } from './api/zcode-plan-credentials-bridge'
-import { ccProvidersApi } from './api/cc-providers-bridge'
 import { agentProfilesApi, llmEndpointsApi } from './api/agent-profiles-bridge'
 import { grokAccountsApi } from './api/grok-accounts-bridge'
 import { cursorAccountsApi } from './api/cursor-accounts-bridge'
@@ -179,7 +178,6 @@ const api = {
   opencodeGoCredentials: opencodeGoCredentialsApi,
   minimaxCredentials: minimaxCredentialsApi,
   zcodePlanCredentials: zcodePlanCredentialsApi,
-  ccProviders: ccProvidersApi,
   llmEndpoints: llmEndpointsApi,
   agentProfiles: agentProfilesApi,
   grokAccounts: grokAccountsApi,

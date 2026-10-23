@@ -1,32 +1,31 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Blocks, ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
 import { translate } from '@/i18n/i18n'
 import { cn } from '@/lib/utils'
-import { getCcProviderViews, refreshCcProviders } from '@/lib/cc-provider-agents'
-import type { CcProviderPublicView } from '../../../../shared/cc-provider'
+import type { LlmEndpointPublicView } from '../../../../shared/llm-endpoint'
 import {
-  CC_PROVIDER_PRESETS,
-  getCcProviderPreset,
-  type CcProviderPreset
-} from '../../../../shared/cc-provider-presets'
+  LLM_ENDPOINT_PRESETS,
+  getLlmEndpointPreset,
+  type LlmEndpointPreset
+} from '../../../../shared/llm-endpoint-presets'
 import {
   draftAddPayload,
   draftBlank,
   draftFromPreset,
   draftFromView,
   draftUpdatePatch,
-  validateCcProviderDraft,
-  type CcProviderDraft
-} from './cc-providers-pane-draft'
-import { CcProvidersPaneEditor, type CcProviderEditorView } from './cc-providers-pane-editor'
+  validateLlmEndpointDraft,
+  type LlmEndpointDraft
+} from './llm-endpoints-pane-draft'
+import { LlmEndpointsPaneEditor, type LlmEndpointEditorView } from './llm-endpoints-pane-editor'
 
-type CcProviderSelection =
+type LlmEndpointSelection =
   | { kind: 'edit'; slug: string }
   | { kind: 'add-preset'; presetKey: string }
   | { kind: 'add-custom' }
 
-function selectionKey(selection: CcProviderSelection | null): string | null {
+function selectionKey(selection: LlmEndpointSelection | null): string | null {
   if (!selection) {
     return null
   }
@@ -41,16 +40,16 @@ function selectionKey(selection: CcProviderSelection | null): string | null {
 }
 
 function draftForSelection(
-  selection: CcProviderSelection,
-  providers: readonly CcProviderPublicView[]
-): CcProviderDraft | null {
+  selection: LlmEndpointSelection,
+  endpoints: readonly LlmEndpointPublicView[]
+): LlmEndpointDraft | null {
   switch (selection.kind) {
     case 'edit': {
-      const view = providers.find((provider) => provider.slug === selection.slug)
+      const view = endpoints.find((endpoint) => endpoint.slug === selection.slug)
       return view ? draftFromView(view) : null
     }
     case 'add-preset': {
-      const preset = getCcProviderPreset(selection.presetKey)
+      const preset = getLlmEndpointPreset(selection.presetKey)
       return preset ? draftFromPreset(preset) : null
     }
     case 'add-custom':
@@ -58,46 +57,46 @@ function draftForSelection(
   }
 }
 
-/** Master-detail pane for third-party Anthropic-compatible Claude Code providers (T13). */
-export function CcProvidersPane(): React.JSX.Element {
-  const [providers, setProviders] = useState<readonly CcProviderPublicView[]>(getCcProviderViews())
-  const [selection, setSelection] = useState<CcProviderSelection | null>(null)
-  const [draft, setDraft] = useState<CcProviderDraft | null>(null)
+type LlmEndpointsPaneProps = {
+  endpoints: readonly LlmEndpointPublicView[]
+  /** Re-fetches the endpoint list from main and resolves with it. */
+  reload: () => Promise<readonly LlmEndpointPublicView[]>
+}
+
+/** Master-detail editor for Anthropic-compatible LLM endpoints that agent profiles can use. */
+export function LlmEndpointsPane({ endpoints, reload }: LlmEndpointsPaneProps): React.JSX.Element {
+  const [selection, setSelection] = useState<LlmEndpointSelection | null>(null)
+  const [draft, setDraft] = useState<LlmEndpointDraft | null>(null)
   const [busy, setBusy] = useState(false)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
   const [saveAttempted, setSaveAttempted] = useState(false)
-  const [editorView, setEditorView] = useState<CcProviderEditorView>('form')
+  const [editorView, setEditorView] = useState<LlmEndpointEditorView>('form')
 
-  const reload = useCallback(async (): Promise<readonly CcProviderPublicView[]> => {
-    await refreshCcProviders()
-    const next = getCcProviderViews()
-    setProviders(next)
-    return next
-  }, [])
+  // Why not an effect on [selection, endpoints]: endpoints is a prop, and resetting the draft
+  // after it changes would flash the stale draft for a frame. Every selection goes through here.
+  const select = (
+    next: LlmEndpointSelection,
+    list: readonly LlmEndpointPublicView[] = endpoints
+  ): void => {
+    setSelection(next)
+    setDraft(draftForSelection(next, list))
+    setConfirmingDelete(false)
+    setSaveAttempted(false)
+    setEditorView('form')
+  }
 
   useEffect(() => {
     void reload()
-      .then((next) => {
-        setSelection((current) => current ?? defaultSelection(next))
-      })
-      .catch(() => {})
+      .then((next) => select(defaultSelection(next), next))
+      .catch(() => select(defaultSelection([]), []))
     // Once on mount: pick an initial selection after the first refresh.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  useEffect(() => {
-    setDraft(selection ? draftForSelection(selection, providers) : null)
-    setConfirmingDelete(false)
-    setSaveAttempted(false)
-    setEditorView('form')
-  }, [selection, providers])
-
-  const existingSlugs = providers.map((provider) => provider.slug)
-  const validationError = draft ? validateCcProviderDraft(draft, existingSlugs) : null
+  const existingSlugs = endpoints.map((endpoint) => endpoint.slug)
+  const validationError = draft ? validateLlmEndpointDraft(draft, existingSlugs) : null
   // Show schema/slug errors only after the first save attempt; JSON syntax errors show live.
   const displayedError = draft?.jsonError ? validationError : saveAttempted ? validationError : null
-
-  const select = (next: CcProviderSelection): void => setSelection(next)
 
   const handleSave = async (): Promise<void> => {
     if (!draft) {
@@ -112,19 +111,19 @@ export function CcProvidersPane(): React.JSX.Element {
       let savedSlug: string
       if (draft.mode === 'add') {
         const payload = draftAddPayload(draft)
-        await window.api.ccProviders.add(payload.slug, payload.config)
+        await window.api.llmEndpoints.add(payload.slug, payload.config)
         savedSlug = payload.slug
       } else {
         const { slug, patch } = draftUpdatePatch(draft)
-        await window.api.ccProviders.update(slug, patch)
+        await window.api.llmEndpoints.update(slug, patch)
         savedSlug = slug
       }
-      await reload()
-      setSelection({ kind: 'edit', slug: savedSlug })
+      const next = await reload()
+      select({ kind: 'edit', slug: savedSlug }, next)
       toast.success(
         draft.mode === 'add'
-          ? translate('auto.components.settings.CcProvidersPane.added', 'Provider added')
-          : translate('auto.components.settings.CcProvidersPane.saved', 'Provider saved')
+          ? translate('auto.components.settings.LlmEndpointsPane.added', 'Endpoint added')
+          : translate('auto.components.settings.LlmEndpointsPane.saved', 'Endpoint saved')
       )
     } catch (error) {
       toast.error(error instanceof Error ? error.message : String(error))
@@ -143,11 +142,11 @@ export function CcProvidersPane(): React.JSX.Element {
     }
     setBusy(true)
     try {
-      await window.api.ccProviders.delete(draft.slug)
+      await window.api.llmEndpoints.delete(draft.slug)
       const next = await reload()
-      setSelection(defaultSelection(next))
+      select(defaultSelection(next), next)
       toast.success(
-        translate('auto.components.settings.CcProvidersPane.deleted', 'Provider deleted')
+        translate('auto.components.settings.LlmEndpointsPane.deleted', 'Endpoint deleted')
       )
     } catch (error) {
       toast.error(error instanceof Error ? error.message : String(error))
@@ -182,27 +181,27 @@ export function CcProvidersPane(): React.JSX.Element {
     <div className="flex h-[680px] overflow-hidden rounded-xl border border-border/60">
       <div className="flex w-48 shrink-0 flex-col gap-1 overflow-y-auto scrollbar-sleek border-r border-border/60 bg-muted/20 p-2">
         <p className="px-3 pb-1 pt-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-          {translate('auto.components.settings.CcProvidersPane.configured', 'Configured')}
+          {translate('auto.components.settings.LlmEndpointsPane.configured', 'Configured')}
         </p>
-        {providers.length === 0 ? (
+        {endpoints.length === 0 ? (
           <p className="px-3 py-1 text-[11px] text-muted-foreground">
-            {translate('auto.components.settings.CcProvidersPane.noneConfigured', 'None yet')}
+            {translate('auto.components.settings.LlmEndpointsPane.noneConfigured', 'None yet')}
           </p>
         ) : (
-          providers.map((provider) =>
+          endpoints.map((endpoint) =>
             row(
-              `edit:${provider.slug}`,
-              provider.name,
-              () => select({ kind: 'edit', slug: provider.slug }),
-              `cc-${provider.slug}`
+              `edit:${endpoint.slug}`,
+              endpoint.name,
+              () => select({ kind: 'edit', slug: endpoint.slug }),
+              endpoint.slug
             )
           )
         )}
         <p className="px-3 pb-1 pt-3 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-          {translate('auto.components.settings.CcProvidersPane.add', 'Add')}
+          {translate('auto.components.settings.LlmEndpointsPane.add', 'Add')}
         </p>
-        {CC_PROVIDER_PRESETS.map((preset: CcProviderPreset) => {
-          const count = providers.filter((provider) => provider.preset === preset.key).length
+        {LLM_ENDPOINT_PRESETS.map((preset: LlmEndpointPreset) => {
+          const count = endpoints.filter((endpoint) => endpoint.preset === preset.key).length
           return row(
             `add:${preset.key}`,
             preset.name,
@@ -212,12 +211,12 @@ export function CcProvidersPane(): React.JSX.Element {
         })}
         {row(
           'add:custom',
-          translate('auto.components.settings.CcProvidersPane.custom', 'Custom'),
+          translate('auto.components.settings.LlmEndpointsPane.custom', 'Custom'),
           () => select({ kind: 'add-custom' })
         )}
       </div>
       {draft ? (
-        <CcProvidersPaneEditor
+        <LlmEndpointsPaneEditor
           draft={draft}
           validationError={displayedError}
           saveDisabled={validationError !== null}
@@ -233,8 +232,8 @@ export function CcProvidersPane(): React.JSX.Element {
         <div className="flex flex-1 items-center justify-center text-xs text-muted-foreground">
           <Blocks className="mr-2 size-4" />
           {translate(
-            'auto.components.settings.CcProvidersPane.pickOne',
-            'Pick a provider on the left, or add one from a preset.'
+            'auto.components.settings.LlmEndpointsPane.pickOne',
+            'Pick an endpoint on the left, or add one from a preset.'
           )}
         </div>
       )}
@@ -242,8 +241,8 @@ export function CcProvidersPane(): React.JSX.Element {
   )
 }
 
-function defaultSelection(providers: readonly CcProviderPublicView[]): CcProviderSelection {
-  return providers.length > 0
-    ? { kind: 'edit', slug: providers[0].slug }
+function defaultSelection(endpoints: readonly LlmEndpointPublicView[]): LlmEndpointSelection {
+  return endpoints.length > 0
+    ? { kind: 'edit', slug: endpoints[0].slug }
     : { kind: 'add-preset', presetKey: 'kimi' }
 }

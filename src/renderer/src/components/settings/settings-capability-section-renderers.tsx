@@ -1,6 +1,6 @@
 import { AccountsPane } from './AccountsPane'
 import { AgentsPane } from './AgentsPane'
-import { CcProvidersPane } from './CcProvidersPane'
+import { AgentProfilesSettingsPane } from './AgentProfilesSettingsPane'
 import { ComputerUsePane } from './ComputerUsePane'
 import { LinearAgentSkillPane } from './LinearAgentSkillPane'
 import { OrchestrationPane } from './OrchestrationPane'
@@ -86,21 +86,21 @@ export function renderAccountsSettingsSection(context: SettingsRenderContext): R
   )
 }
 
-export function renderCcProvidersSettingsSection(
+export function renderAgentProfilesSettingsSection(
   context: SettingsRenderContext
 ): React.JSX.Element {
   const { navigation, view } = context
   return (
     <SettingsSection
-      id="cc-providers"
-      title={translate('auto.components.settings.Settings.ccProvidersTitle', 'CC Providers')}
+      id="agent-profiles"
+      title={translate('auto.components.settings.Settings.agentProfilesTitle', 'Agent Profiles')}
       description={translate(
-        'auto.components.settings.Settings.ccProvidersDescription',
-        'Third-party Anthropic-compatible providers. Each one becomes a cc-{slug} agent running the Claude Code harness against your env and key.'
+        'auto.components.settings.Settings.agentProfilesDescription',
+        'Reusable Claude Code setups. Each profile becomes an ap-{slug} agent with its own model source, model, mode and role prompt.'
       )}
-      searchEntries={navigation.getSectionSearchEntries('cc-providers')}
+      searchEntries={navigation.getSectionSearchEntries('agent-profiles')}
     >
-      {view.isSectionMounted('cc-providers') ? <CcProvidersPane /> : null}
+      {view.isSectionMounted('agent-profiles') ? <AgentProfilesSettingsPane /> : null}
     </SettingsSection>
   )
 }

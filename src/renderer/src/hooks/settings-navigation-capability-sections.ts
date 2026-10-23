@@ -1,7 +1,7 @@
 import { LinearIcon } from '@/components/icons/LinearIcon'
 import { getAccountsPaneSearchEntries } from '@/components/settings/accounts-search'
 import { getAgentsPaneSearchEntries } from '@/components/settings/agents-search'
-import { getCcProvidersPaneSearchEntries } from '@/components/settings/cc-providers-search'
+import { getAgentProfilesPaneSearchEntries } from '@/components/settings/agent-profiles-search'
 import { getComputerUsePaneSearchEntries } from '@/components/settings/computer-use-search'
 import { getGeneralPaneSearchEntries } from '@/components/settings/general-search'
 import { getIntegrationsPaneSearchEntries } from '@/components/settings/integrations-search'
@@ -65,14 +65,17 @@ export function buildCapabilitySettingsSections({
       badge: translate('auto.hooks.useSettingsNavigationMetadata.7c79d3b7bf', 'Optional')
     },
     {
-      id: 'cc-providers',
-      title: translate('auto.hooks.useSettingsNavigationMetadata.ccProvidersTitle', 'CC Providers'),
+      id: 'agent-profiles',
+      title: translate(
+        'auto.hooks.useSettingsNavigationMetadata.agentProfilesTitle',
+        'Agent Profiles'
+      ),
       description: translate(
-        'auto.hooks.useSettingsNavigationMetadata.ccProvidersDescription',
-        'Run the Claude Code harness against third-party Anthropic-compatible providers (Kimi, GLM, DeepSeek, custom).'
+        'auto.hooks.useSettingsNavigationMetadata.agentProfilesDescription',
+        'Claude Code agents with their own model source, model, mode and role prompt, plus the LLM endpoints they can use.'
       ),
       icon: Blocks,
-      searchEntries: getCcProvidersPaneSearchEntries(),
+      searchEntries: getAgentProfilesPaneSearchEntries(),
       group: 'capabilities'
     },
     {
@@ -196,7 +199,9 @@ export function buildSetupSettingsSections({
         'Workspace defaults, app setup, and maintenance.'
       ),
       icon: SlidersHorizontal,
-      searchEntries: getGeneralPaneSearchEntries({ includeProjectRuntime: isLocalWindowsHost }),
+      searchEntries: getGeneralPaneSearchEntries({
+        includeProjectRuntime: isLocalWindowsHost
+      }),
       group: 'setup'
     },
     {

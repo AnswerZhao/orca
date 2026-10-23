@@ -897,8 +897,7 @@
           "opencode2_label": "OpenCode 2",
           "codebuddy_label": "CodeBuddy",
           "qoder_cn_label": "Qoder CLI China",
-          "jcode_label": "Jcode",
-          "ccProvider": "CC {{name}}"
+          "jcode_label": "Jcode"
         },
         "skill": {
           "cli": {
@@ -1468,8 +1467,8 @@
         "shareSkillsTitle": "Share Skills",
         "shareSkillsDescription": "Share your skills with an unlisted link. Anyone who has it can install them.",
         "floatingWorkspaceWebDescription": "Global terminal and markdown tabs.",
-        "ccProvidersTitle": "CC Providers",
-        "ccProvidersDescription": "Run the Claude Code harness against third-party Anthropic-compatible providers (Kimi, GLM, DeepSeek, custom)."
+        "agentProfilesTitle": "Agent Profiles",
+        "agentProfilesDescription": "Claude Code agents with their own model source, model, mode and role prompt, plus the LLM endpoints they can use."
       },
       "useAppMenuPaste": {
         "pasteTooLarge": "Paste is too large."
@@ -8935,8 +8934,8 @@
           "linearDescription": "How Linear works in Orca, setup checklist, agent skill, and example prompts.",
           "tasksDescription": "Connect providers, install the Linear skill, and choose what appears in Tasks.",
           "remoteServersDescription": "Run Orca on another machine and work on it from here.",
-          "ccProvidersTitle": "CC Providers",
-          "ccProvidersDescription": "Third-party Anthropic-compatible providers. Each one becomes a cc-{slug} agent running the Claude Code harness against your env and key."
+          "agentProfilesTitle": "Agent Profiles",
+          "agentProfilesDescription": "Reusable Claude Code setups. Each profile becomes an ap-{slug} agent with its own model source, model, mode and role prompt."
         },
         "SettingsFormControls": {
           "42a4d15a30": "No matching fonts.",
@@ -13277,51 +13276,108 @@
           "lan": "Local network · {{address}}",
           "loopback": "This computer · {{address}}"
         },
-        "CcProvidersPane": {
-          "added": "Provider added",
-          "saved": "Provider saved",
-          "deleted": "Provider deleted",
+        "LlmEndpointsPane": {
+          "added": "Endpoint added",
+          "saved": "Endpoint saved",
+          "deleted": "Endpoint deleted",
           "configured": "Configured",
           "noneConfigured": "None yet",
           "add": "Add",
           "custom": "Custom",
-          "pickOne": "Pick a provider on the left, or add one from a preset.",
+          "pickOne": "Pick an endpoint on the left, or add one from a preset.",
+          "invalidJson": "Invalid JSON syntax",
+          "jsonObjectRequired": "JSON must be an object with string fields",
           "formView": "Form",
           "fixJsonFirst": "Fix the JSON syntax error first",
           "confirmDelete": "Confirm delete",
           "delete": "Delete",
-          "name": "Display name",
-          "slugPlaceholder": "Derived from the name when empty",
-          "apiKey": "API key",
-          "deepseekModelHint": "(mapped server-side — leave empty)",
-          "formFootnote": "Other env keys (e.g. API_TIMEOUT_MS) are edited in the JSON view; the form only syncs the five common fields.",
-          "jsonEditFootnote": "apiKey showing •••••••• keeps the stored key; paste a real key to rotate it.",
-          "jsonAddFootnote": "You can paste a complete provider JSON here; it validates on save.",
-          "jsonOk": "Valid · env keys allowed: ANTHROPIC_* / CLAUDE_CODE_* / API_TIMEOUT_MS",
-          "saveChanges": "Save changes",
-          "save": "Save",
-          "invalidJson": "Invalid JSON syntax",
-          "jsonObjectRequired": "JSON must be an object with string fields",
-          "ccPrefix": "cc-",
-          "jsonEditorLabel": "JSON",
           "basicsSection": "Basics",
-          "nameHint": "Shown as CC {{name}}",
+          "name": "Display name",
+          "nameHint": "Shown in the model source picker of agent profiles",
           "slugTitle": "Slug",
+          "slugPlaceholder": "Derived from the name when empty",
           "connectionSection": "Connection",
+          "apiKey": "API key",
           "apiKeyKeepHint": "Leave empty to keep the current key",
           "modelsSection": "Models",
           "modelTitle": "Model",
-          "smallModelTitle": "Small/fast model"
+          "deepseekModelHint": "(mapped server-side — leave empty)",
+          "smallModelTitle": "Small/fast model",
+          "formFootnote": "Other env keys (e.g. API_TIMEOUT_MS) are edited in the JSON view; the form only syncs the five common fields.",
+          "jsonEditorLabel": "JSON",
+          "jsonEditFootnote": "apiKey showing •••••••• keeps the stored key; paste a real key to rotate it.",
+          "jsonAddFootnote": "You can paste a complete endpoint JSON here; it validates on save.",
+          "jsonOk": "Valid · env keys allowed: ANTHROPIC_* / CLAUDE_CODE_* / API_TIMEOUT_MS",
+          "saveChanges": "Save changes",
+          "save": "Save"
         },
-        "ccProviders": {
+        "AgentProfilesPane": {
+          "added": "Profile added",
+          "saved": "Profile saved",
+          "deleted": "Profile deleted",
+          "profiles": "Profiles",
+          "noneConfigured": "None yet",
+          "newProfile": "New profile",
+          "nameRequired": "Name is required",
+          "slugRequired": "Enter a slug: the name has no letters or digits to derive one from",
+          "slugInvalid": "Slug: 1-30 chars of lowercase letters, digits, or dashes; starts with a letter or digit",
+          "slugTaken": "Slug \"{{slug}}\" already exists — pick another slug",
+          "endpointMissing": "Endpoint \"{{endpoint}}\" no longer exists — pick another model source",
+          "invalid": "Invalid profile",
+          "modeManual": "Manual",
+          "modeAcceptEdits": "Accept edits",
+          "modeAuto": "Auto",
+          "modePlan": "Plan",
+          "modeDontAsk": "Don't ask",
+          "modeBypassPermissions": "Bypass permissions",
+          "effortLow": "Low",
+          "effortMedium": "Medium",
+          "effortHigh": "High",
+          "effortXhigh": "Extra high",
+          "effortMax": "Max",
+          "modelEndpointHint": "Empty uses the endpoint's ANTHROPIC_MODEL",
+          "modelSubscriptionHint": "Empty uses the account default",
+          "modelPlaceholder": "Account default",
+          "confirmDelete": "Confirm delete",
+          "delete": "Delete",
+          "identitySection": "Identity",
+          "icon": "Icon",
+          "name": "Name",
+          "nameHint": "Shown in the agent picker",
+          "slug": "Slug",
+          "slugLockedHint": "Fixed after creation",
+          "slugHint": "Suggested from the name; type one if the name has no letters",
+          "runtimeSection": "Runtime",
+          "provider": "Provider",
+          "providerHint": "Profiles run the installed Claude Code CLI",
+          "source": "Model source",
+          "sourceHint": "Signed-in account, or a saved LLM endpoint",
+          "sourceSubscription": "Claude account (subscription)",
+          "model": "Model",
+          "mode": "Mode",
+          "effort": "Thinking",
+          "effortDefault": "Claude Code default",
+          "promptSection": "Role prompt",
+          "rolePrompt": "Role prompt",
+          "rolePromptHint": "Appended to Claude Code's system prompt",
+          "rolePromptPlaceholder": "You are a software architect. Before writing code, …",
+          "rolePromptNewSessions": "Changes apply to new sessions only; running sessions keep the prompt they started with.",
+          "rolePromptRemote": "Not applied over SSH or in WSL; the other settings still are.",
+          "footerHint": "Saved profiles appear in the agent picker as their own agents.",
+          "saveChanges": "Save changes",
+          "save": "Save"
+        },
+        "AgentProfilesSettingsPane": {
+          "endpointsTitle": "LLM endpoints",
+          "endpointsDescription": "Anthropic-compatible endpoints (Kimi, GLM, DeepSeek, custom) a profile can run Claude Code against. API keys stay on this machine.",
+          "profilesTitle": "Agent profiles",
+          "profilesDescription": "Named Claude Code setups: model source, model, mode, thinking and a role prompt. Each one appears in the agent picker."
+        },
+        "agentProfiles": {
           "search": {
-            "presets": {
-              "title": "Presets",
-              "description": "Add a provider from a built-in preset (Kimi, GLM, DeepSeek); only the API key is required."
-            },
-            "custom": {
-              "title": "Custom provider",
-              "description": "Configure any Anthropic-compatible endpoint by editing the provider JSON directly."
+            "endpoints": {
+              "title": "LLM endpoints",
+              "description": "Add an Anthropic-compatible endpoint from a preset (Kimi, GLM, DeepSeek) or as custom JSON."
             },
             "kw": {
               "kimi": "kimi",
@@ -13331,8 +13387,16 @@
               "deepseek": "deepseek",
               "anthropic": "anthropic compatible",
               "baseUrl": "base url",
-              "env": "env json",
-              "apiKey": "api key"
+              "apiKey": "api key",
+              "role": "role prompt",
+              "systemPrompt": "system prompt",
+              "model": "model",
+              "permissionMode": "permission mode",
+              "effort": "effort"
+            },
+            "profiles": {
+              "title": "Agent profiles",
+              "description": "Create Claude Code agents with their own model, permission mode, thinking effort and role prompt."
             }
           }
         }

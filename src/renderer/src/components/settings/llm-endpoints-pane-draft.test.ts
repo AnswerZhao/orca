@@ -1,23 +1,22 @@
 import { describe, expect, it } from 'vitest'
-import type { CcProviderPublicView } from '../../../../shared/cc-provider'
-import { CC_PROVIDER_PRESETS, getCcProviderPreset } from '../../../../shared/cc-provider-presets'
+import type { LlmEndpointPublicView } from '../../../../shared/llm-endpoint'
+import { LLM_ENDPOINT_PRESETS, getLlmEndpointPreset } from '../../../../shared/llm-endpoint-presets'
 import {
   applyDraftFormField,
   applyDraftJsonText,
-  CC_PROVIDER_API_KEY_MASK,
+  LLM_ENDPOINT_API_KEY_MASK,
   draftBlank,
   draftFromPreset,
   draftFromView,
   draftAddPayload,
   draftUpdatePatch,
-  slugifyCcProviderName,
-  validateCcProviderDraft
-} from './cc-providers-pane-draft'
+  slugifyLlmEndpointName,
+  validateLlmEndpointDraft
+} from './llm-endpoints-pane-draft'
 
-const KIMI = getCcProviderPreset('kimi')!
+const KIMI = getLlmEndpointPreset('kimi')!
 
-const VIEW: CcProviderPublicView = {
-  id: 'cc-kimi',
+const VIEW: LlmEndpointPublicView = {
   slug: 'kimi',
   name: 'Kimi',
   preset: 'kimi',
@@ -42,13 +41,13 @@ describe('draft construction', () => {
     const draft = draftFromView(VIEW)
     expect(draft.mode).toBe('edit')
     expect(draft.apiKey).toBe('')
-    expect(JSON.parse(draft.json).apiKey).toBe(CC_PROVIDER_API_KEY_MASK)
+    expect(JSON.parse(draft.json).apiKey).toBe(LLM_ENDPOINT_API_KEY_MASK)
   })
 
   it('every preset produces a draft that validates once a key is typed', () => {
-    for (const preset of CC_PROVIDER_PRESETS) {
+    for (const preset of LLM_ENDPOINT_PRESETS) {
       const draft = applyDraftFormField(draftFromPreset(preset), 'apiKey', 'sk-x')
-      expect(validateCcProviderDraft(draft, []), preset.key).toBeNull()
+      expect(validateLlmEndpointDraft(draft, []), preset.key).toBeNull()
     }
   })
 })
@@ -111,15 +110,15 @@ describe('JSON → form sync', () => {
 
 describe('validation', () => {
   it('requires an apiKey on add but not on edit', () => {
-    expect(validateCcProviderDraft(draftFromPreset(KIMI), [])).toBe('API key is required')
-    expect(validateCcProviderDraft(draftFromView(VIEW), ['kimi'])).toBeNull()
+    expect(validateLlmEndpointDraft(draftFromPreset(KIMI), [])).toBe('API key is required')
+    expect(validateLlmEndpointDraft(draftFromView(VIEW), ['kimi'])).toBeNull()
   })
 
   it('rejects duplicate and malformed slugs on add', () => {
     let draft = applyDraftFormField(draftFromPreset(KIMI), 'apiKey', 'sk-x')
-    expect(validateCcProviderDraft(draft, ['kimi'])).toMatch(/already exists/)
+    expect(validateLlmEndpointDraft(draft, ['kimi'])).toMatch(/already exists/)
     draft = applyDraftFormField(draft, 'slug', 'Bad Slug')
-    expect(validateCcProviderDraft(draft, [])).toMatch(/Slug/)
+    expect(validateLlmEndpointDraft(draft, [])).toMatch(/Slug/)
   })
 
   it('rejects env whitelist violations coming from pasted JSON', () => {
@@ -128,7 +127,7 @@ describe('validation', () => {
     const parsed = JSON.parse(draft.json)
     parsed.env.PATH = '/evil'
     draft = applyDraftJsonText(draft, JSON.stringify(parsed))
-    expect(validateCcProviderDraft(draft, [])).toMatch(/env keys must match/)
+    expect(validateLlmEndpointDraft(draft, [])).toMatch(/env keys must match/)
   })
 })
 
@@ -150,7 +149,7 @@ describe('payloads', () => {
   })
 
   it('slugify keeps names within the slug pattern', () => {
-    expect(slugifyCcProviderName('GLM 工作号')).toBe('glm')
-    expect(slugifyCcProviderName('!!!')).toBe('custom')
+    expect(slugifyLlmEndpointName('GLM 工作号')).toBe('glm')
+    expect(slugifyLlmEndpointName('!!!')).toBe('custom')
   })
 })
