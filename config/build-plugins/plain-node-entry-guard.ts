@@ -23,8 +23,9 @@ export const CLI_MAIN_ENTRY_NAMES = [
   'gitlab/project-ref-parser',
   'orca-profiles/profile-index-store',
   'claude-accounts/keychain',
-  'cc-providers/cc-provider-agent-registration',
-  'cc-providers/cc-provider-store',
+  'agent-profiles/agent-profile-agent-registration',
+  'agent-profiles/agent-profile-store',
+  'agent-profiles/llm-endpoint-store',
   'skills/bundled-skill-install/cli-entry',
   'macos-tree-clone',
   ...[

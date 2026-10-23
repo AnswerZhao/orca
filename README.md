@@ -26,14 +26,14 @@
   <img src="docs/assets/readme-hero.jpg" alt="Orca desktop app running agents in parallel worktrees, with the Orca mobile companion app in the corner" width="960" />
 </p>
 
-## Fork Customization: CC Providers
+## Fork Customization: Agent Profiles
 
-The `cc-providers` branch adds third-party Anthropic-compatible providers while `main` tracks the official upstream repository.
+The `cc-providers` branch adds Claude Code agent profiles while `main` tracks the official upstream repository.
 
-- **Presets and custom endpoints** — Configure Kimi, GLM, DeepSeek, or any Anthropic-compatible endpoint from **Settings → CC Providers**.
-- **Claude Code harness** — Each saved provider becomes a `cc-{slug}` agent that runs through the installed Claude Code CLI with the provider's base URL, API key, and model environment.
-- **Form and JSON editing** — Edit common fields or the complete provider JSON, with validation and masked API keys.
-- **Desktop and CLI support** — Provider agents appear in the agent catalog and can be launched with `orca agent launch --agent cc-{slug}`.
+- **LLM endpoints** — Save Kimi, GLM, DeepSeek, or any Anthropic-compatible endpoint (base URL, API key, model env) from **Settings → Agent Profiles**. API keys stay in 0600 files and never reach the renderer.
+- **Agent profiles** — Each profile is an `ap-{slug}` agent that runs the installed Claude Code CLI with a model source (the signed-in Claude account or a saved endpoint), model, permission mode (default `auto`), effort, and a role prompt appended via `--append-system-prompt-file`. Flags already on the launch command win over profile defaults.
+- **Role prompts** — Claude Code records the system prompt per conversation, so edits reach new sessions only. Prompts are not applied to SSH or WSL launches.
+- **Desktop and CLI support** — Profiles appear in the agent catalog and can be launched with `orca agent launch --agent ap-{slug}`.
 
 ### Sync Upstream into the Customization Branch
 
