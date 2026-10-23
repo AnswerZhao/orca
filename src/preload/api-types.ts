@@ -1,4 +1,5 @@
 import type {
+  CcProvidersApi,
   ClaudeAccountsApi,
   CodexAccountsApi,
   CodexConfigSyncApi,
@@ -151,6 +152,7 @@ export type PreloadApi = {
   }
   minimaxCredentials: MinimaxCredentialsApi
   zcodePlanCredentials: ZcodePlanCredentialsApi
+  ccProviders: CcProvidersApi
   grokAccounts: GrokAccountsApi
   cursorAccounts: CursorAccountsApi
   ssh: SshApi

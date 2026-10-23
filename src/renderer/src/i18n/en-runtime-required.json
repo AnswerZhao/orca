@@ -1176,6 +1176,10 @@
           "de9b2f32f3": "Enable",
           "e44c5d681e": "From"
         },
+        "CcProvidersPane": {
+          "custom": "Custom",
+          "jsonEditFootnote": "apiKey showing •••••••• keeps the stored key; paste a real key to rotate it."
+        },
         "CliSection": {
           "4c7e3e4c5f": "install",
           "5d432fe44d": "installed",

@@ -661,7 +661,8 @@
           "freebuff_label": "Freebuff",
           "dsh_label": "DeepSeek Harness",
           "qoder_label": "Qoder CLI",
-          "qoder_cn_label": "Qoder CLI China"
+          "qoder_cn_label": "Qoder CLI China",
+          "ccProvider": "CC {{name}}"
         },
         "skill": {
           "cli": {
@@ -1230,7 +1231,9 @@
         "automationsDescription": "安排智能体工作并选择自动化是否显示在侧栏中。",
         "shareSkillsTitle": "分享技能",
         "shareSkillsDescription": "通过未列出的链接分享您的技能。任何拥有它的人都可以安装它们。",
-        "floatingWorkspaceWebDescription": "全局终端和 Markdown 选项卡。"
+        "floatingWorkspaceWebDescription": "全局终端和 Markdown 选项卡。",
+        "ccProvidersTitle": "CC Providers",
+        "ccProvidersDescription": "把 Claude Code harness 接到第三方 Anthropic 兼容 provider(Kimi、GLM、DeepSeek 或自定义)。"
       },
       "useAppMenuPaste": {
         "pasteTooLarge": "粘贴内容过大。"
@@ -8551,7 +8554,9 @@
           "linearTitle": "Linear",
           "linearDescription": "Linear 在 Orca 中的工作方式、设置清单、智能体技能和提示词示例。",
           "tasksDescription": "连接提供商、安装 Linear 技能并选择要在任务中显示的内容。",
-          "remoteServersDescription": "在另一台机器上运行 Orca，并在这里使用它。"
+          "remoteServersDescription": "在另一台机器上运行 Orca，并在这里使用它。",
+          "ccProvidersTitle": "CC Providers",
+          "ccProvidersDescription": "第三方 Anthropic 兼容 provider。每个 provider 生成一个 cc-{slug} agent，用你的 env 和 key 跑 Claude Code harness。"
         },
         "SettingsFormControls": {
           "42a4d15a30": "没有匹配的字体。",
@@ -12937,6 +12942,65 @@
           "tailscale": "Tailscale · {{address}}",
           "lan": "局域网 · {{address}}",
           "loopback": "此电脑 · {{address}}"
+        },
+        "CcProvidersPane": {
+          "added": "Provider 已添加",
+          "saved": "Provider 已保存",
+          "deleted": "Provider 已删除",
+          "configured": "已配置",
+          "noneConfigured": "暂无",
+          "add": "添加",
+          "custom": "自定义",
+          "pickOne": "在左侧选择 provider 查看或编辑，或从预设快速添加。",
+          "formView": "表单",
+          "fixJsonFirst": "请先修复 JSON 语法错误",
+          "confirmDelete": "确认删除",
+          "delete": "删除",
+          "name": "显示名称",
+          "slugPlaceholder": "留空则按名称自动派生",
+          "apiKey": "API key",
+          "deepseekModelHint": "(服务端映射，无需填写)",
+          "formFootnote": "其余 env 键(如 API_TIMEOUT_MS)在 JSON 视图里编辑；表单只同步这五个常用字段。",
+          "jsonEditFootnote": "apiKey 显示 •••••••• 时保存不改动它；粘贴真实 key 即轮换。",
+          "jsonAddFootnote": "可以直接粘贴整段 provider JSON，保存时校验。",
+          "jsonOk": "格式有效 · env 键白名单：ANTHROPIC_* / CLAUDE_CODE_* / API_TIMEOUT_MS",
+          "saveChanges": "保存更改",
+          "save": "保存",
+          "invalidJson": "JSON 语法无效",
+          "jsonObjectRequired": "JSON 必须是字段值为字符串的对象",
+          "ccPrefix": "cc-",
+          "jsonEditorLabel": "JSON",
+          "basicsSection": "基本信息",
+          "nameHint": "显示为 CC {{name}}",
+          "slugTitle": "Slug",
+          "connectionSection": "认证与端点",
+          "apiKeyKeepHint": "留空则保持当前 key",
+          "modelsSection": "模型",
+          "modelTitle": "模型",
+          "smallModelTitle": "小模型"
+        },
+        "ccProviders": {
+          "search": {
+            "presets": {
+              "title": "内置预设",
+              "description": "从内置预设(Kimi、GLM、DeepSeek)添加 provider，只需填 API key。"
+            },
+            "custom": {
+              "title": "自定义 provider",
+              "description": "直接编辑 provider JSON，接入任意 Anthropic 兼容端点。"
+            },
+            "kw": {
+              "kimi": "kimi 月之暗面",
+              "moonshot": "moonshot",
+              "glm": "glm 智谱",
+              "zhipu": "zhipu 智谱",
+              "deepseek": "deepseek 深度求索",
+              "anthropic": "兼容 anthropic",
+              "baseUrl": "接口地址",
+              "env": "环境变量",
+              "apiKey": "密钥"
+            }
+          }
         }
       },
       "right": {

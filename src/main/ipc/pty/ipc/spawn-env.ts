@@ -18,7 +18,11 @@ import { prepareAntigravityAccountForLaunch } from '../../../antigravity/native-
 export async function assemblePtyIpcSpawnEnv(ctx: PtyIpcSpawnState): Promise<void> {
   const args = ctx.args
   // Why: the daemon-backed provider skips LocalPtyProvider's buildSpawnEnv, so assemble the same host-local env here for parity.
-  const baseEnvWithAuth = ctx.claudeAuth ? { ...args.env, ...ctx.claudeAuth.envPatch } : args.env
+  const baseEnvWithAuth = ctx.ccProviderEnv
+    ? { ...args.env, ...ctx.ccProviderEnv }
+    : ctx.claudeAuth
+      ? { ...args.env, ...ctx.claudeAuth.envPatch }
+      : args.env
   const spawnPaneKey = baseEnvWithAuth?.ORCA_PANE_KEY
   const parsedSpawnPaneKey = parseValidPaneKey(spawnPaneKey)
   const verifiedPaneKey =

@@ -897,7 +897,8 @@
           "opencode2_label": "OpenCode 2",
           "codebuddy_label": "CodeBuddy",
           "qoder_cn_label": "Qoder CLI China",
-          "jcode_label": "Jcode"
+          "jcode_label": "Jcode",
+          "ccProvider": "CC {{name}}"
         },
         "skill": {
           "cli": {
@@ -1466,7 +1467,9 @@
         "automationsDescription": "Schedule agent work and choose whether Automations appears in the sidebar.",
         "shareSkillsTitle": "Share Skills",
         "shareSkillsDescription": "Share your skills with an unlisted link. Anyone who has it can install them.",
-        "floatingWorkspaceWebDescription": "Global terminal and markdown tabs."
+        "floatingWorkspaceWebDescription": "Global terminal and markdown tabs.",
+        "ccProvidersTitle": "CC Providers",
+        "ccProvidersDescription": "Run the Claude Code harness against third-party Anthropic-compatible providers (Kimi, GLM, DeepSeek, custom)."
       },
       "useAppMenuPaste": {
         "pasteTooLarge": "Paste is too large."
@@ -8931,7 +8934,9 @@
           "linearTitle": "Linear",
           "linearDescription": "How Linear works in Orca, setup checklist, agent skill, and example prompts.",
           "tasksDescription": "Connect providers, install the Linear skill, and choose what appears in Tasks.",
-          "remoteServersDescription": "Run Orca on another machine and work on it from here."
+          "remoteServersDescription": "Run Orca on another machine and work on it from here.",
+          "ccProvidersTitle": "CC Providers",
+          "ccProvidersDescription": "Third-party Anthropic-compatible providers. Each one becomes a cc-{slug} agent running the Claude Code harness against your env and key."
         },
         "SettingsFormControls": {
           "42a4d15a30": "No matching fonts.",
@@ -13271,6 +13276,65 @@
           "tailscale": "Tailscale · {{address}}",
           "lan": "Local network · {{address}}",
           "loopback": "This computer · {{address}}"
+        },
+        "CcProvidersPane": {
+          "added": "Provider added",
+          "saved": "Provider saved",
+          "deleted": "Provider deleted",
+          "configured": "Configured",
+          "noneConfigured": "None yet",
+          "add": "Add",
+          "custom": "Custom",
+          "pickOne": "Pick a provider on the left, or add one from a preset.",
+          "formView": "Form",
+          "fixJsonFirst": "Fix the JSON syntax error first",
+          "confirmDelete": "Confirm delete",
+          "delete": "Delete",
+          "name": "Display name",
+          "slugPlaceholder": "Derived from the name when empty",
+          "apiKey": "API key",
+          "deepseekModelHint": "(mapped server-side — leave empty)",
+          "formFootnote": "Other env keys (e.g. API_TIMEOUT_MS) are edited in the JSON view; the form only syncs the five common fields.",
+          "jsonEditFootnote": "apiKey showing •••••••• keeps the stored key; paste a real key to rotate it.",
+          "jsonAddFootnote": "You can paste a complete provider JSON here; it validates on save.",
+          "jsonOk": "Valid · env keys allowed: ANTHROPIC_* / CLAUDE_CODE_* / API_TIMEOUT_MS",
+          "saveChanges": "Save changes",
+          "save": "Save",
+          "invalidJson": "Invalid JSON syntax",
+          "jsonObjectRequired": "JSON must be an object with string fields",
+          "ccPrefix": "cc-",
+          "jsonEditorLabel": "JSON",
+          "basicsSection": "Basics",
+          "nameHint": "Shown as CC {{name}}",
+          "slugTitle": "Slug",
+          "connectionSection": "Connection",
+          "apiKeyKeepHint": "Leave empty to keep the current key",
+          "modelsSection": "Models",
+          "modelTitle": "Model",
+          "smallModelTitle": "Small/fast model"
+        },
+        "ccProviders": {
+          "search": {
+            "presets": {
+              "title": "Presets",
+              "description": "Add a provider from a built-in preset (Kimi, GLM, DeepSeek); only the API key is required."
+            },
+            "custom": {
+              "title": "Custom provider",
+              "description": "Configure any Anthropic-compatible endpoint by editing the provider JSON directly."
+            },
+            "kw": {
+              "kimi": "kimi",
+              "moonshot": "moonshot",
+              "glm": "glm",
+              "zhipu": "zhipu",
+              "deepseek": "deepseek",
+              "anthropic": "anthropic compatible",
+              "baseUrl": "base url",
+              "env": "env json",
+              "apiKey": "api key"
+            }
+          }
         }
       },
       "right": {

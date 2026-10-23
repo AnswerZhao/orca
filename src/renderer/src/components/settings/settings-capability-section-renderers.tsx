@@ -1,5 +1,6 @@
 import { AccountsPane } from './AccountsPane'
 import { AgentsPane } from './AgentsPane'
+import { CcProvidersPane } from './CcProvidersPane'
 import { ComputerUsePane } from './ComputerUsePane'
 import { LinearAgentSkillPane } from './LinearAgentSkillPane'
 import { OrchestrationPane } from './OrchestrationPane'
@@ -81,6 +82,25 @@ export function renderAccountsSettingsSection(context: SettingsRenderContext): R
           accountOwnerPlatform={terminal.windowsTerminalCapabilities.hostPlatform}
         />
       )}
+    </SettingsSection>
+  )
+}
+
+export function renderCcProvidersSettingsSection(
+  context: SettingsRenderContext
+): React.JSX.Element {
+  const { navigation, view } = context
+  return (
+    <SettingsSection
+      id="cc-providers"
+      title={translate('auto.components.settings.Settings.ccProvidersTitle', 'CC Providers')}
+      description={translate(
+        'auto.components.settings.Settings.ccProvidersDescription',
+        'Third-party Anthropic-compatible providers. Each one becomes a cc-{slug} agent running the Claude Code harness against your env and key.'
+      )}
+      searchEntries={navigation.getSectionSearchEntries('cc-providers')}
+    >
+      {view.isSectionMounted('cc-providers') ? <CcProvidersPane /> : null}
     </SettingsSection>
   )
 }

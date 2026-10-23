@@ -23,6 +23,7 @@ import {
   ensureJcodeRuntimeDir,
   JCODE_RUNTIME_DIR_ENV_KEY
 } from '../../../../shared/jcode-runtime-dir'
+import { resolveCcProviderSpawnEnv } from '../../../cc-providers/cc-provider-spawn-env'
 
 export async function prepareRuntimePtySpawn(
   ctx: RuntimePtySpawnState
@@ -82,8 +83,11 @@ export async function prepareRuntimePtySpawn(
   ctx.expectedWslDistro = target.expectedWslDistro
   ctx.codexSelectionTarget = target.codexSelectionTarget
   args.env = withClaudeProfileTerminalEnv(args.env, ctx.codexSelectionTarget)
+  // Why: a cc-* provider agent brings its own ANTHROPIC_* env; the official Claude
+  // account auth (claudeAuth) must not run for it or it would overwrite those vars.
+  ctx.ccProviderEnv = ctx.isClaudeLaunch ? resolveCcProviderSpawnEnv(args.launchAgent) : null
   ctx.claudeAuth =
-    ctx.isClaudeLaunch && ctx.deps.prepareClaudeAuth
+    ctx.isClaudeLaunch && !ctx.ccProviderEnv && ctx.deps.prepareClaudeAuth
       ? await ctx.deps.prepareClaudeAuth(ctx.codexSelectionTarget)
       : null
 
@@ -108,7 +112,11 @@ export async function prepareRuntimePtySpawn(
       ...(args.placement ? { placement: args.placement } : {})
     }
   }
-  ctx.env = ctx.claudeAuth ? { ...args.env, ...ctx.claudeAuth.envPatch } : args.env
+  ctx.env = ctx.ccProviderEnv
+    ? { ...args.env, ...ctx.ccProviderEnv }
+    : ctx.claudeAuth
+      ? { ...args.env, ...ctx.claudeAuth.envPatch }
+      : args.env
   ctx.requestedAgentTeamsPath = ctx.env?.ORCA_AGENT_TEAMS_TEAM_ID
     ? ctx.env[resolvePathEnvKey(ctx.env, process.platform)]
     : undefined

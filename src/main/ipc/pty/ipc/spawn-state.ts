@@ -57,6 +57,8 @@ export type PtyIpcSpawnState = {
   exitedBeforeRegistration: boolean
   isClaudeLaunch: boolean
   claudeAuth: ClaudeRuntimeAuthPreparation | null
+  /** ANTHROPIC_* env for a cc-* provider launch; set instead of claudeAuth. */
+  ccProviderEnv: Record<string, string> | null
   terminalRuntimeOptions: {
     shellOverride?: string
     terminalWindowsWslDistro?: string | null
@@ -138,6 +140,7 @@ export function createPtyIpcSpawnState(
     exitedBeforeRegistration: false,
     isClaudeLaunch: false,
     claudeAuth: null,
+    ccProviderEnv: null,
     terminalRuntimeOptions: {},
     isDaemonHostSpawn: false,
     isMintedSessionId: false,

@@ -1,0 +1,32 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CC_PROVIDER_PRESETS > snapshot: preset env tables 1`] = `
+[
+  {
+    "env": {
+      "ANTHROPIC_BASE_URL": "https://api.moonshot.cn/anthropic",
+      "ANTHROPIC_MODEL": "kimi-k3",
+      "ANTHROPIC_SMALL_FAST_MODEL": "kimi-k2.6",
+    },
+    "key": "kimi",
+    "name": "Kimi",
+  },
+  {
+    "env": {
+      "ANTHROPIC_BASE_URL": "https://open.bigmodel.cn/api/anthropic",
+      "ANTHROPIC_MODEL": "glm-5.2",
+      "ANTHROPIC_SMALL_FAST_MODEL": "glm-4.7",
+      "API_TIMEOUT_MS": "3000000",
+    },
+    "key": "glm",
+    "name": "GLM",
+  },
+  {
+    "env": {
+      "ANTHROPIC_BASE_URL": "https://api.deepseek.com/anthropic",
+    },
+    "key": "deepseek",
+    "name": "DeepSeek",
+  },
+]
+`;

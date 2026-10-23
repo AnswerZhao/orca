@@ -3,6 +3,7 @@ import { mainProcessState as state } from './main-process-state'
 import { initializeReadyFoundation } from './main-process-ready-foundation'
 import { initializeReadyRuntimeServices } from './main-process-ready-runtime'
 import { releaseDesktopActivationAfter } from './serve-desktop-activation'
+import { syncCcProviderAgents } from '../cc-providers/cc-provider-agent-registration'
 import {
   initializeMainProcessRuntimeLaunch,
   type MainProcessRuntimeLaunchOptions
@@ -12,6 +13,9 @@ import {
 export async function initializeMainProcessReady(
   launchOptions: MainProcessRuntimeLaunchOptions
 ): Promise<void> {
+  // Why before everything else: spawns and the renderer catalog resolve cc-* agents through
+  // the dynamic registry, which must reflect ~/.orca/cc-providers before either runs.
+  syncCcProviderAgents()
   const options: MainProcessRuntimeLaunchOptions = {
     ...launchOptions,
     openMainWindow: releaseDesktopActivationAfter(
