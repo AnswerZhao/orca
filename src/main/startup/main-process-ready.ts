@@ -3,6 +3,7 @@ import { mainProcessState as state } from './main-process-state'
 import { initializeReadyFoundation } from './main-process-ready-foundation'
 import { initializeReadyRuntimeServices } from './main-process-ready-runtime'
 import { releaseDesktopActivationAfter } from './serve-desktop-activation'
+import { syncAgentProfileAgents } from '../agent-profiles/agent-profile-agent-registration'
 import {
   initializeMainProcessRuntimeLaunch,
   type MainProcessRuntimeLaunchOptions
@@ -11,6 +12,9 @@ import {
 export async function initializeMainProcessReady(
   launchOptions: MainProcessRuntimeLaunchOptions
 ): Promise<void> {
+  // Why before everything else: spawns and the renderer catalog resolve ap-* agents through
+  // the dynamic registry, which must reflect ~/.orca/agent-profiles before either runs.
+  syncAgentProfileAgents()
   const options: MainProcessRuntimeLaunchOptions = {
     ...launchOptions,
     openMainWindow: releaseDesktopActivationAfter(

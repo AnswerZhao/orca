@@ -5,6 +5,7 @@ import {
   resolveDetectedTuiAgentIds,
   type TuiAgentDetectionCommand
 } from '../../shared/tui-agent-detection-commands'
+import { resolveDynamicDetectedTuiAgentIds } from '../../shared/tui-agent-dynamic-registry'
 import { hydrateShellPathForAgentDetection } from '../ipc/agent-detection-shell-path'
 import {
   getPreflightWslTarget,
@@ -37,11 +38,11 @@ export async function detectInstalledAgents(
   const runtime = getPreflightWslTarget(context) ? 'wsl' : process.platform
   const commands = activeDetectionCommands(options)
   const probeCommands = getTuiAgentDetectionProbeCommands(commands, runtime)
-  return resolveDetectedTuiAgentIds(
-    commands,
-    await detectAgentCommandsOnHost(probeCommands, { context }),
-    runtime
-  )
+  const foundCommands = await detectAgentCommandsOnHost(probeCommands, { context })
+  return [
+    ...resolveDetectedTuiAgentIds(commands, foundCommands, runtime),
+    ...resolveDynamicDetectedTuiAgentIds(foundCommands, runtime)
+  ]
 }
 
 export async function detectInstalledAgentsWithShellPathHydration(

@@ -1,6 +1,7 @@
 import type React from 'react'
 import { ClaudeIcon, DroidIcon, OpenAIIcon } from '@/components/status-bar/icons'
 import type { TuiAgent } from '../../../shared/tui-agent'
+import { isAgentProfileAgentId } from '../../../shared/agent-profile-agent-id'
 import type { TerminalAgent } from '../../../shared/terminal-agent'
 import { formatAgentTypeLabel } from '../../../shared/agent-type-label'
 import {
@@ -15,6 +16,8 @@ import {
 import { createLocalizedCatalog } from '@/i18n/localized-catalog'
 import { AGENT_FAVICON_ASSETS } from './agent-favicon-assets'
 import { buildAgentCatalogEntries } from './agent-catalog-entries'
+import { getAgentProfileCatalogVersion, getAgentProfileViews } from './agent-profile-agents'
+import { AGENT_PROFILE_ICON_COMPONENTS } from './agent-profile-icons'
 
 export type AgentCatalogEntry = {
   id: TuiAgent
@@ -30,7 +33,10 @@ export type AgentCatalogEntry = {
   homepageUrl: string
 }
 
-export const getAgentCatalog = createLocalizedCatalog(buildAgentCatalogEntries)
+export const getAgentCatalog = createLocalizedCatalog(
+  buildAgentCatalogEntries,
+  getAgentProfileCatalogVersion
+)
 
 // Why: tests and a few legacy call sites still import a catalog snapshot.
 export const AGENT_CATALOG: AgentCatalogEntry[] = getAgentCatalog()
@@ -49,6 +55,12 @@ export function AgentIcon({
   // Unknown identity gets a neutral glyph so Codex panes cannot briefly display Claude’s icon before hooks arrive.
   if (!agent) {
     return <AgentLetterIcon letter="?" size={size} />
+  }
+  if (isAgentProfileAgentId(agent)) {
+    // Why: a profile's own icon tells profiles apart; the Claude mark covers a not-yet-loaded list.
+    const icon = getAgentProfileViews().find((view) => view.id === agent)?.icon
+    const ProfileIcon = icon ? AGENT_PROFILE_ICON_COMPONENTS[icon] : undefined
+    return ProfileIcon ? <ProfileIcon size={size} /> : <ClaudeIcon size={size} />
   }
   if (agent === 'claude' || agent === 'claude-agent-teams') {
     return <ClaudeIcon size={size} />

@@ -55,6 +55,8 @@ export type PtyIpcSpawnState = {
   paneAgentLaunch: PaneAgentLaunch | null
   isClaudeLaunch: boolean
   claudeAuth: ClaudeRuntimeAuthPreparation | null
+  /** ANTHROPIC_* env for an ap-* profile on an LLM endpoint; set instead of claudeAuth. */
+  llmEndpointEnv: Record<string, string> | null
   terminalRuntimeOptions: {
     shellOverride?: string
     terminalWindowsWslDistro?: string | null
@@ -137,6 +139,7 @@ export function createPtyIpcSpawnState(
     paneAgentLaunch: null,
     isClaudeLaunch: false,
     claudeAuth: null,
+    llmEndpointEnv: null,
     terminalRuntimeOptions: {},
     isDaemonHostSpawn: false,
     ownsNewIncarnation: false,

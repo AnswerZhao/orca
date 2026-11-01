@@ -38,6 +38,7 @@ const {
   registerOpenCodeGoCredentialsHandlersMock,
   registerMiniMaxCredentialsHandlersMock,
   registerZcodePlanCredentialsHandlersMock,
+  registerAgentProfileHandlersMock,
   registerGrokAccountHandlersMock,
   registerCursorAccountHandlersMock,
   registerClipboardHandlersMock,
@@ -110,6 +111,7 @@ const {
   registerOpenCodeGoCredentialsHandlersMock: vi.fn(),
   registerMiniMaxCredentialsHandlersMock: vi.fn(),
   registerZcodePlanCredentialsHandlersMock: vi.fn(),
+  registerAgentProfileHandlersMock: vi.fn(),
   registerGrokAccountHandlersMock: vi.fn(),
   registerCursorAccountHandlersMock: vi.fn(),
   registerClipboardHandlersMock: vi.fn(),
@@ -382,6 +384,10 @@ vi.mock('../zcode-plan-credentials', () => ({
   registerZcodePlanCredentialsHandlers: registerZcodePlanCredentialsHandlersMock
 }))
 
+vi.mock('../agent-profiles', () => ({
+  registerAgentProfileHandlers: registerAgentProfileHandlersMock
+}))
+
 vi.mock('../grok-accounts', () => ({
   registerGrokAccountHandlers: registerGrokAccountHandlersMock
 }))
@@ -499,6 +505,7 @@ describe('registerCoreHandlers', () => {
     registerOpenCodeGoCredentialsHandlersMock.mockReset()
     registerMiniMaxCredentialsHandlersMock.mockReset()
     registerZcodePlanCredentialsHandlersMock.mockReset()
+    registerAgentProfileHandlersMock.mockReset()
     registerClipboardHandlersMock.mockReset()
     setTrustedClipboardRendererWebContentsIdMock.mockReset()
     registerUpdaterHandlersMock.mockReset()
@@ -611,6 +618,7 @@ describe('registerCoreHandlers', () => {
     expect(registerOpenCodeGoCredentialsHandlersMock).toHaveBeenCalledWith(rateLimits)
     expect(registerMiniMaxCredentialsHandlersMock).toHaveBeenCalledWith(rateLimits)
     expect(registerZcodePlanCredentialsHandlersMock).toHaveBeenCalledWith(rateLimits)
+    expect(registerAgentProfileHandlersMock).toHaveBeenCalled()
     expect(registerGrokAccountHandlersMock).toHaveBeenCalled()
     expect(registerCursorAccountHandlersMock).toHaveBeenCalled()
     expect(registerRateLimitHandlersMock).toHaveBeenCalledWith(rateLimits, codexAccounts)

@@ -24,6 +24,7 @@ import { I18nProvider } from './i18n/I18nProvider'
 import { translate } from './i18n/i18n'
 import { getOrCreateRendererRoot } from './lib/react-renderer-root'
 import { primeTerminalWebglAddon } from './lib/pane-manager/pane-webgl-renderer'
+import { refreshAgentProfiles } from './lib/agent-profile-agents'
 import { SkillWarningPreviewLauncher } from './components/skills/SkillWarningPreviewLauncher'
 import { installBrowserClientPageRenderer } from './components/browser-pane/browser-client-page-renderer-installation'
 import { registerBrowserClientPageGuestMessageHandler } from './components/browser-pane/browser-client-page-retained-elements'
@@ -36,11 +37,17 @@ const disposeOsFileDropGuard = installOsFileDropCancellationGuard()
 import.meta.hot?.dispose(disposeOsFileDropGuard)
 const disposeBodyOverlayAttributes = installBodyOverlayAttributes()
 import.meta.hot?.dispose(disposeBodyOverlayAttributes)
-recordRendererCrashBreadcrumb('renderer_bootstrap_started', { dev: import.meta.env.DEV })
+recordRendererCrashBreadcrumb('renderer_bootstrap_started', {
+  dev: import.meta.env.DEV
+})
 installRendererCrashDiagnostics()
 installTypingLatencyDiagnostic()
 installAppKeyboardRouter()
 installAutomationHostDiagnostic()
+// Why: the agent catalog and isTuiAgent must know ap-* profiles before the first composer render.
+void refreshAgentProfiles().catch((error: unknown) => {
+  console.warn('[agent-profiles] failed to load profile list:', error)
+})
 
 if (
   import.meta.env.DEV &&

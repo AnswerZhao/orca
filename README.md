@@ -26,6 +26,35 @@
   <img src="docs/assets/readme-hero.jpg" alt="Orca desktop app running agents in parallel worktrees, with the Orca mobile companion app in the corner" width="960" />
 </p>
 
+## Fork Customization: Agent Profiles
+
+The `cc-providers` branch adds Claude Code agent profiles while `main` tracks the official upstream repository.
+
+- **LLM endpoints** — Save Kimi, GLM, DeepSeek, or any Anthropic-compatible endpoint (base URL, API key, model env) from **Settings → Agent Profiles**. API keys stay in 0600 files and never reach the renderer.
+- **Agent profiles** — Each profile is an `ap-{slug}` agent that runs the installed Claude Code CLI with a model source (the signed-in Claude account or a saved endpoint), model, permission mode (default `auto`), effort, and a role prompt appended via `--append-system-prompt-file`. Flags already on the launch command win over profile defaults.
+- **Role prompts** — Claude Code records the system prompt per conversation, so edits reach new sessions only. Prompts are not applied to SSH or WSL launches.
+- **Desktop and CLI support** — Profiles appear in the agent catalog and can be launched with `orca agent launch --agent ap-{slug}`.
+
+### Sync Upstream into the Customization Branch
+
+Keep custom work on `cc-providers`; do not commit it to `main`. Here, `upstream` is the official `stablyai/orca` repository and `origin` is this fork. If `upstream` is not configured yet, add it once with `git remote add upstream https://github.com/stablyai/orca.git`.
+
+`cc-providers` is kept as a single rolling commit on top of `main`, so `git log main..cc-providers` always shows the whole customization, and conflict resolutions from each sync fold back into that same commit. Enable `git config rerere.enabled true` once so resolved conflicts are replayed automatically.
+
+To sync `main` with upstream and rebase the customization onto it:
+
+```bash
+git fetch upstream
+git switch main
+git merge --ff-only upstream/main
+git push origin main
+git switch cc-providers
+git rebase main
+git push --force-with-lease origin cc-providers
+```
+
+If a locale catalog conflicts during the rebase, take `main`'s version, re-add the `ccProvider*` / `CcProvidersPane` keys, and run `pnpm run sync:localization-runtime-catalog`.
+
 ## Features
 
 <table>

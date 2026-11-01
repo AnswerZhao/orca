@@ -65,6 +65,8 @@ export type RuntimePtySpawnState = {
   codexSelectionTarget: CodexAccountSelectionTarget
   launchCommand: string | undefined
   claudeAuth: ClaudeRuntimeAuthPreparation | null
+  /** ANTHROPIC_* env for an ap-* profile on an LLM endpoint; set instead of claudeAuth. */
+  llmEndpointEnv: Record<string, string> | null
   shouldPersistHostSessionBinding: boolean
   hostSessionBinding:
     | {
@@ -214,6 +216,7 @@ export function createRuntimePtySpawnState(
     codexSelectionTarget: { runtime: 'host' },
     launchCommand: undefined,
     claudeAuth: null,
+    llmEndpointEnv: null,
     shouldPersistHostSessionBinding: false,
     hostSessionBinding: undefined,
     env: undefined,

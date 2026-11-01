@@ -24,6 +24,7 @@ import {
   ensureJcodeRuntimeDir,
   JCODE_RUNTIME_DIR_ENV_KEY
 } from '../../../../shared/jcode-runtime-dir'
+import { prepareClaudeLaunchAuth } from '../../../agent-profiles/agent-profile-spawn-auth'
 
 export async function prepareRuntimePtySpawn(
   ctx: RuntimePtySpawnState
@@ -101,10 +102,16 @@ export async function prepareRuntimePtySpawn(
   ctx.wslHoldReadAnchor = target.wslHoldReadAnchor
   ctx.codexSelectionTarget = target.codexSelectionTarget
   args.env = withClaudeProfileTerminalEnv(args.env, ctx.codexSelectionTarget)
-  ctx.claudeAuth =
-    ctx.isClaudeLaunch && ctx.deps.prepareClaudeAuth
-      ? await ctx.deps.prepareClaudeAuth(ctx.codexSelectionTarget)
-      : null
+  const prepareClaudeAuth = ctx.deps.prepareClaudeAuth
+  const launchAuth = await prepareClaudeLaunchAuth({
+    isClaudeLaunch: ctx.isClaudeLaunch,
+    launchAgent: args.launchAgent,
+    prepareClaudeAuth: prepareClaudeAuth
+      ? () => prepareClaudeAuth(ctx.codexSelectionTarget)
+      : undefined
+  })
+  ctx.llmEndpointEnv = launchAuth.llmEndpointEnv
+  ctx.claudeAuth = launchAuth.claudeAuth
 
   ctx.shouldPersistHostSessionBinding = args.persistHostSessionBinding === true
   if (ctx.shouldPersistHostSessionBinding) {
@@ -127,7 +134,11 @@ export async function prepareRuntimePtySpawn(
       ...(args.placement ? { placement: args.placement } : {})
     }
   }
-  ctx.env = ctx.claudeAuth ? { ...args.env, ...ctx.claudeAuth.envPatch } : args.env
+  ctx.env = ctx.llmEndpointEnv
+    ? { ...args.env, ...ctx.llmEndpointEnv }
+    : ctx.claudeAuth
+      ? { ...args.env, ...ctx.claudeAuth.envPatch }
+      : args.env
   ctx.requestedAgentTeamsPath = ctx.env?.ORCA_AGENT_TEAMS_TEAM_ID
     ? ctx.env[resolvePathEnvKey(ctx.env, process.platform)]
     : undefined

@@ -212,6 +212,12 @@
       "rules": {
         "max-lines": ["error", { "max": 800, "skipBlankLines": true, "skipComments": true }]
       }
+    },
+    {
+      "files": ["config/build-plugins/plain-node-entry-guard.ts"],
+      "rules": {
+        "max-lines": "off"
+      }
     }
   ],
   "ignorePatterns": [

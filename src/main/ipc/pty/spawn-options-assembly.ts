@@ -25,6 +25,7 @@ import { promoteAgentTeamsShimPath, deleteRequestedEnvKeys } from './host-env/pa
 import { resolveConfiguredTerminalShellArgs } from './configured-terminal-shell-args'
 import { ptySizes } from './delivery/visibility-state'
 import { shouldSeedPreAttachPtySize } from './delivery/attached-pty-size'
+import { applyAgentProfileLaunchArgs } from '../../agent-profiles/agent-profile-launch-args'
 
 type TrustInput = Parameters<typeof applyAgentWorkspaceTrustToSpawn>[0]
 
@@ -117,6 +118,24 @@ export async function assemblePtySpawnLaunchOptions(input: PtySpawnLaunchOptions
   const { args } = input
   const connectionId = args.connectionId ?? undefined
   const launchAgent = isTuiAgent(args.launchAgent) ? args.launchAgent : undefined
+  const runsOffThisHost = Boolean(connectionId) || input.codexRuntime === 'wsl'
+  const commandPlatform = runsOffThisHost ? 'linux' : process.platform
+  // Why here: both lanes, fresh launches and resumes, reach the provider through this command.
+  const profileCommand = input.preAdoptedStablePane
+    ? input.launchCommand
+    : applyAgentProfileLaunchArgs({
+        launchAgent: args.launchAgent,
+        command: input.launchCommand,
+        runsOffThisHost,
+        shell: resolveStartupShell(
+          commandPlatform,
+          resolveLocalWindowsAgentStartupShell({
+            platform: commandPlatform,
+            isRemote: Boolean(connectionId),
+            terminalWindowsShell: input.shellOverride
+          })
+        )
+      })
   const shell = resolveStartupShell(
     input.codexRuntime === 'wsl' ? 'linux' : process.platform,
     resolveLocalWindowsAgentStartupShell({
@@ -126,14 +145,13 @@ export async function assemblePtySpawnLaunchOptions(input: PtySpawnLaunchOptions
     })
   )
   const openCodeLaunch = await prepareOpenCodePtyLaunch({
-    command: input.launchCommand,
+    command: profileCommand,
     agent: launchAgent,
     env: input.env,
     envToDelete: input.envToDelete,
     cwd: input.cwd,
     connectionId,
-    isFreshLaunch: !input.preAdoptedStablePane && input.launchCommand !== undefined,
-    shell,
+    isFreshLaunch: !input.preAdoptedStablePane && profileCommand !== undefined,
     ...(input.codexRuntime === 'wsl'
       ? { wsl: { distro: input.expectedWslDistro ?? undefined } }
       : {})

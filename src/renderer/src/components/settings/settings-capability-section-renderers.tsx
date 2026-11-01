@@ -2,6 +2,7 @@ import { AccountsPane } from './AccountsPane'
 import { getProviderAccountsOwnerKey } from '@/runtime/runtime-provider-accounts-client'
 import { AgentsPane } from './AgentsPane'
 import { AgentDefaultSurfaceSection } from './AgentDefaultSurfaceSection'
+import { AgentProfilesSettingsPane } from './AgentProfilesSettingsPane'
 import { ComputerUsePane } from './ComputerUsePane'
 import { LinearAgentSkillPane } from './LinearAgentSkillPane'
 import { OrchestrationPane } from './OrchestrationPane'
@@ -94,6 +95,25 @@ export function renderAccountsSettingsSection(context: SettingsRenderContext): R
           accountOwnerPlatform={terminal.windowsTerminalCapabilities.hostPlatform}
         />
       )}
+    </SettingsSection>
+  )
+}
+
+export function renderAgentProfilesSettingsSection(
+  context: SettingsRenderContext
+): React.JSX.Element {
+  const { navigation, view } = context
+  return (
+    <SettingsSection
+      id="agent-profiles"
+      title={translate('auto.components.settings.Settings.agentProfilesTitle', 'Agent Profiles')}
+      description={translate(
+        'auto.components.settings.Settings.agentProfilesDescription',
+        'Reusable Claude Code setups. Each profile becomes an ap-{slug} agent with its own model source, model, mode and role prompt.'
+      )}
+      searchEntries={navigation.getSectionSearchEntries('agent-profiles')}
+    >
+      {view.isSectionMounted('agent-profiles') ? <AgentProfilesSettingsPane /> : null}
     </SettingsSection>
   )
 }

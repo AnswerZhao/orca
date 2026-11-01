@@ -11,6 +11,7 @@ import { resolvePtySpawnStartupTarget } from '../spawn-startup-target'
 import type { PtyIpcSpawnState } from './spawn-state'
 import { localPtySpawnCwd } from '../host-env/spawn-cwd'
 import { getConnectionExecutionHostId } from '../../../../shared/execution-host'
+import { prepareClaudeLaunchAuth } from '../../../agent-profiles/agent-profile-spawn-auth'
 
 export async function preparePtyIpcSpawnPreflight(ctx: PtyIpcSpawnState): Promise<void> {
   const args = ctx.args
@@ -117,9 +118,15 @@ export async function preparePtyIpcSpawnPreflight(ctx: PtyIpcSpawnState): Promis
   ctx.codexSelectionTarget = target.codexSelectionTarget
   ctx.spawnTiming.mark('preflight')
   args.env = withClaudeProfileTerminalEnv(args.env, ctx.codexSelectionTarget)
-  ctx.claudeAuth =
-    ctx.isClaudeLaunch && ctx.deps.prepareClaudeAuth
-      ? await ctx.deps.prepareClaudeAuth(ctx.codexSelectionTarget)
-      : null
+  const prepareClaudeAuth = ctx.deps.prepareClaudeAuth
+  const launchAuth = await prepareClaudeLaunchAuth({
+    isClaudeLaunch: ctx.isClaudeLaunch,
+    launchAgent: args.launchAgent,
+    prepareClaudeAuth: prepareClaudeAuth
+      ? () => prepareClaudeAuth(ctx.codexSelectionTarget)
+      : undefined
+  })
+  ctx.llmEndpointEnv = launchAuth.llmEndpointEnv
+  ctx.claudeAuth = launchAuth.claudeAuth
   ctx.spawnTiming.mark('auth')
 }
